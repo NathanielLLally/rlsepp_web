@@ -1,0 +1,12 @@
+% title 'GSG Member Portal';
+% layout 'portal';
+
+<center>
+        <table>
+
+% foreach my $i (1..5) {
+                <tr><td> <%= $i %> </td><tr>
+% }                
+        </table>
+
+  </center>

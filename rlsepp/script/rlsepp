@@ -1,0 +1,16 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use Mojo::File qw(curfile);
+use lib curfile->dirname->sibling('lib')->to_string;
+use Mojolicious::Commands;
+use Mojo::Server::Hypnotoad;
+
+# Start command line interface for application
+Mojolicious::Commands->start_app('rlsepp');
+
+#my $hypnotoad = Mojo::Server::Hypnotoad->new;
+#$hypnotoad->run('myapp.pl');
+

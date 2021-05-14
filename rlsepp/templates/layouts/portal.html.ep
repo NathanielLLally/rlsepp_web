@@ -1,0 +1,22 @@
+<!doctype html>
+<html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title><%= title %></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width">
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <meta name="google-signin-client_id" content="17870503823-it9a6qsdstdb8jpg8f16qpqmqg0m6cnt.apps.googleusercontent.com"/>
+
+  %= include 'common_js'
+  %= include 'common_styles'
+  <%= content_for 'header' %>
+
+</head>
+<body>
+  %= include 'header'
+  %= include 'navbar'
+  <%= content %>
+
+  </body>
+</html>

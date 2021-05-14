@@ -1,0 +1,14 @@
+% content_for header => begin
+% end 
+% my $useremail = session('useremail');
+
+<div class="navbar" >
+% if (defined $useremail) {
+  <div class="status"> <%= $useremail %> </div>
+% } else {
+  <a class="navbar" href="/brochure">Log In</a>
+% }
+  <a class="navbar" href="/data/view/rlsepp.public.transaction_moves">movements</a>
+  <a class="navbar" href="/data/view/rlsepp.public.latest_moves_by_profit">opportunities</a>
+  <a class="navbar" href="/app/selector">choose</a>
+</div>
