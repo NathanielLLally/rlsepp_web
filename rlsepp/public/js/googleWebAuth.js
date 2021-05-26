@@ -43,8 +43,9 @@ function onSignIn(googleUser) {
   setUser('_gusername', profile.getName())
   setUser('_guserimageurl', profile.getImageUrl())
   setUser('_guseremail', profile.getEmail())
+  setUser('_useremail', profile.getEmail())
 
-  setUser('_jssesh', btoa(JSON.stringify(['_guserid', '_guseremail'])))
+  setUser('_jssesh', btoa(JSON.stringify(['_useremail', '_guserid', '_guseremail', '_gusername', '_guserimageurl'])))
 
 /*
       console.log('ID: ' + profile.getId());
@@ -60,7 +61,7 @@ function onSignIn(googleUser) {
 
       console.log(document.cookie)
 
-//      $('.useremail').html(getUser('email'));
+      $('.useremail').html(getUser('email', 'g'));
       $('.useroauth').html("<pre><p>"+getUser('name', 'g')+"<img src=\""+getUser('imageurl','g')+"\"/></pre>");
 }
 

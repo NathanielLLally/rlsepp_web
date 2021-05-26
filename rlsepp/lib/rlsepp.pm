@@ -1,6 +1,6 @@
 package rlsepp;
 use Mojo::Base 'Mojolicious', -signatures;
-use Mojo::Base 'Mojolicious::Controller';
+use Mojo::Base 'Mojolicious::Controller', -signatures;
 use Mojo::IOLoop;
 use Mojo::Util qw/dumper/;
 use Try::Tiny;
@@ -23,9 +23,15 @@ sub startup {
 
   # Load configuration from config file
   my $config = $self->plugin('NotYAMLConfig');
+#plugin 'TagHelpers::NoCaching', {key => 'v'};
+  my $helper = $self->plugin('TagHelpers::NoCaching', {key => 'v'});
 
   # Configure the application
   $self->secrets($config->{secrets});
+  $self->sessions->default_expiration(300);
+#  $self->sessions->default_expiration(864000);
+
+#$self->app->types->type(json => 'application/json+html');
 
   # Router
   my $r = $self->routes;
@@ -44,11 +50,16 @@ sub startup {
 
   # Normal route to controller
   $r->any('/')->to(controller => 'main', action => 'index');
+  $r->any('/debug/')->to(controller => 'main', action => 'debug');
   $r->any('/auth/')->to(controller => 'main', action => 'index');
   $r->any('/auth/test')->to(controller => 'main', action => 'test');
   $r->any('/app/portal')->to(controller => 'main', action => 'portal');
   $r->any('/app/selector')->to(controller => 'main', action => 'selector');
-  $r->any('/data/view')->to(controller => 'data', action => 'view');
+  $r->any('/data/')->to('Data#test');
+  $r->get('/data/view/:schema/:view')->to('Data#view');
+  $r->get('/data/view/:schema/:view', [format => ['json', 'html']])->to('Data#view');
+  $r->any('/data/dump/:schema/:view/')->to(controller => 'data', action => 'dump');
+#  $r->get('/data/view/:proc')->to('Ajax::DBIx#dbic');
   $r->any('/brochure')->to(controller => 'main', action => 'brochure');
   #  $r->post('/overexposed/login')->to(controller => 'main', action => 'login');
   #$r->post('/overexposed/find_game')->to(controller => 'main', action => 'find_game');

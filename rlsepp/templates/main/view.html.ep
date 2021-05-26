@@ -1,11 +1,8 @@
 % title 'GSG Member Portal';
 % layout 'portal';
-% my $views = session 'views';
-% if (not defined $views) { $views = []; }
 <center>
         <table>
-
-% foreach my $view (@$views) {
+% foreach my $v ([$view]) {
                 <tr><td> <%= $view %> </td><tr>
 % }                
         </table>

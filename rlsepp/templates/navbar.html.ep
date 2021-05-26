@@ -1,14 +1,25 @@
 % content_for header => begin
-% end 
+% end
 % my $useremail = session('useremail');
+% my $ssoid = session('ssoid');
+% my $roles = session('roles');
 
 <div class="navbar" >
-% if (defined $useremail) {
-  <div class="status"> <%= $useremail %> </div>
-% } else {
-  <a class="navbar" href="/brochure">Log In</a>
+<ul>
+% if (defined $mode && $mode eq 'development') {
+  <li><a class="navbar" href="/debug">debug</a></li>
 % }
-  <a class="navbar" href="/data/view/rlsepp.public.transaction_moves">movements</a>
-  <a class="navbar" href="/data/view/rlsepp.public.latest_moves_by_profit">opportunities</a>
-  <a class="navbar" href="/app/selector">choose</a>
+% if (defined $useremail) {
+  <li><a class="navbar info active" href="/"><%= $useremail %></a></li>
+% } else {
+  <li><a class="navbar " href="/">Log In</a></li>
+% }
+% if (grep {/query/} @$roles) {
+  <li><a class="navbar" href="/data/view/public/transaction_moves">movements</a></li>
+  <li><a class="navbar" href="/data/view/public/latest_moves_by_profit">opportunities</a></li>
+% }
+% if (grep {/trade/} @$roles) {
+  <li><a class="navbar" href="/app/selector">choose</a></li>
+% }
+</ul>
 </div>

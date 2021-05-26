@@ -8,8 +8,7 @@
   <script src="https://apis.google.com/js/platform.js" async defer></script>
   <meta name="google-signin-client_id" content="17870503823-it9a6qsdstdb8jpg8f16qpqmqg0m6cnt.apps.googleusercontent.com"/>
 
-  %= include 'common_js'
-  %= include 'common_styles'
+  %= include 'common_header'
   <%= content_for 'header' %>
 
 </head>

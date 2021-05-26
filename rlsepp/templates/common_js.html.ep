@@ -1,3 +1,0 @@
-%= javascript '/js/libs/jquery-1.7.1.min.js'
-%= javascript '/js/libs/underscore-min.js'
-%= javascript 'https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js'

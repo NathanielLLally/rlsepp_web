@@ -32,16 +32,16 @@ sub load {
   my $k = '_jssesh';
   my $fields = b64_decode $c->cookie($k);
   my $jssesh = $self->deserialize->($fields);
-  $c->app->log->info( "Mojolicious::Sessions::DOM load" );
-  $c->app->log->info( $fields );
+  $c->app->log->debug( "Mojolicious::Sessions::DOM load" );
+  $c->app->log->debug( $fields );
 
   $c->app->log->info($self->serialize->($session));
 
   foreach my $key (@$jssesh) {
     my $val = $c->cookie($key);
     if (defined $val) {
-      $key =~ s/^_[g]?//;
-#      $c->app->log->info( "$key => $val" );
+      $key =~ s/^_//;
+      $c->app->log->debug( "$key => $val" );
       $c->session($key, $val);
     }
   }
