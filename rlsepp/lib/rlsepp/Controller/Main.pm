@@ -11,15 +11,74 @@ use Try::Tiny;
 use Mojo::JSON qw(decode_json encode_json);
 use Data::Dumper;
 use Mojolicious::Sessions;
-use rlsepp::Controller::Ajax;
 
 # Render the template "index.html.ep"
 
 use rlsepp::Auth;
 
+sub wsSession {
+  my $s = shift;
+  my $format = $s->stash('format');
+  $s->app->log->debug("ws://main:wsSession format $format");
+
+  # Increase inactivity timeout for connection a bit (what was it?)
+  $s->inactivity_timeout(300);
+
+  $s->on( json => sub {
+      my ($ws, $data) = @_;
+      
+      $s->app->log->debug('main::wsSession->'.dumper(\$data));
+      my $err = 'sahksess';
+      try {
+        foreach (my ($k, $v) = each %$data) {
+          $s->app->log->debug("$k => $v");
+        }
+      } catch {
+        if ($_) {
+          $err = $_;
+        }
+      };
+      $ws->send({json => {status => "insert status: $err"}});
+
+      });
+
+  # Incoming message
+#  $s->on(message => sub ($s, $msg) {
+#    $s->app->log->debug("on message $msg");
+#    $s->send("echo: $msg");
+#  });
+
+  # Closed
+  $s->on(finish => sub ($s, $code, $reason = undef) {
+    $s->app->log->debug("WebSocket closed with s[$s]code [$code] reason[$reason]");
+  });
+}
+
+sub echo {
+  my $c = shift;
+  # Opened
+  $c->app->log->debug('WebSocket opened');
+
+  # Increase inactivity timeout for connection a bit
+  $c->inactivity_timeout(300);
+
+  # Incoming message
+  $c->on(message => sub ($c, $msg) {
+    $c->send("echo: $msg");
+  });
+
+  # Closed
+  $c->on(finish => sub ($c, $code, $reason = undef) {
+    $c->app->log->debug("WebSocket closed with status $code");
+  });
+}
+
 sub index {
   my $s = shift;
+  $s->app->log->debug( ' req query  '.$s->req->url->query );
   $s->app->log->info("index");
+  $s->app->log->debug("Controller::Main: session: ".$s->session);
+  $s->app->log->debug("Controller::Main: session: ".dumper($s->session));
 #  $s->res->headers->cache_control('max-age=1, no-cache');
 
   # TODO: hypnotoad
@@ -32,6 +91,7 @@ sub index {
 sub brochure {
   my $s = shift;
 
+  $s->app->log->debug( ' req query  '.$s->req->url->query );
 #  if (not $s->session('guseremail')) {
 #    $s->redirect_to('/');
 #    return;
@@ -42,6 +102,9 @@ sub brochure {
   $s->stash(mode => $s->app->mode);
   my ($guserid, $guseremail, $gusername, $guserimageurl) = 
     ($s->session('guserid'), $s->session('guseremail'), $s->session('gusername'), $s->session('guserimageurl'));
+  $s->app->log->debug("Controller::Main: session: ".$s->session);
+  $s->app->log->debug("Controller::Main: session: ".dumper($s->session));
+  $s->app->log->debug("$guserid, $guseremail, $gusername, $guserimageurl");
 
   #/index googleAuthWeb -> Cookie::js_sesh
   #this Cookie::js_sesh -> Mojolicious::Session::DOM -> session
@@ -49,12 +112,11 @@ sub brochure {
   #  getUserID -> dB.useraccesscontrol.sso
   #
   $s->session(ssoid => $s->getUserID({guseremail => $guseremail, guserid => $guserid, gusername => $gusername, guserimageurl =>$guserimageurl}));
-  $s->app->log->debug("$guserid, $guseremail, $gusername, $guserimageurl");
 
   my $roles = $s->userRoles($guseremail);
   $s->session(roles => $roles);
   $s->app->log->debug(dumper($roles));
-#  $sesh->store;
+#  $s->session->store;
 
 #  my @jar = $s->res->cookies;
 #  $s->app->log->info( encode_json(\@jar));
@@ -64,14 +126,22 @@ sub brochure {
 sub portal {
   my $s = shift;
 
+  $s->app->log->debug( ' req query  '.$s->req->url->query );
   $s->stash(mode => $s->app->mode);
 	$s->session(views => $s->schemaviews);
+  $s->stash(url => $s->url_for('/data/store')->to_abs->scheme('ws'));
   $s->app->log->debug("views:".dumper($s->stash('views')));
   $s->app->log->debug("sessoid:".$s->session('ssoid'));
   $s->app->log->debug("session useremail:".$s->session('useremail'));
 
   #$s->res->headers->cache_control('max-age=1, no-cache');
 
+  #  session cache, session only
+  #  new session can reproduce bug
+  #  see confluence, make bug report
+  #  sometimes, new browser, will require, a two times user interaction
+  #  to avoid this redirect
+  #
   if (not $s->session('ssoid')) {
     $s->redirect_to('/');
     return;
@@ -130,6 +200,71 @@ sub status
       count => $count,
       status => \@servers,
       } );
+}
+
+sub orderbook
+{
+  my $s = shift;
+  $s->stash(mode => $s->app->mode);
+  if (not $s->session('ssoid')) {
+    $s->redirect_to('/');
+    return;
+  }
+
+  $s->render(status => 200);
+}
+
+sub log
+{
+  my $s = shift;
+  $s->stash(mode => $s->app->mode);
+
+  if (not $s->session('ssoid')) {
+    $s->redirect_to('/');
+    return;
+  }
+
+  $s->render(status => 200);
+}
+
+# execute
+#
+sub selector
+{
+  my $s = shift;
+  $s->stash(mode => $s->app->mode);
+  if (not $s->session('ssoid')) {
+    $s->redirect_to('/');
+    return;
+  }
+  $s->render(status => 200);
+}
+
+sub wsSelector
+{
+  my $s = shift;
+  $s->stash(mode => $s->app->mode);
+  $s->stash(ssoid => $s->session('ssoid'));
+  my $format = $s->stash('format');
+
+  # Increase inactivity timeout for connection a bit
+  $s->inactivity_timeout(300);
+
+  $s->on( json => sub {
+    $s->app->log->debug("on json");
+      my ($ws, $data) = @_;
+      
+      $s->app->log->debug(dumper(\$data));
+
+    $ws->send({json => {status => "insert status"}});
+      });
+
+
+  $s->on(finish => sub ($s, $code, $reason = undef) {
+    $s->app->log->debug("WebSocket closed with status $code");
+  });
+
+  $s->render(status => 200);
 }
 
 1;

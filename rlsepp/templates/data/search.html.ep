@@ -1,0 +1,71 @@
+%= javascript begin
+
+function filterGlobal () {
+	console.log($('#global_filter').val());
+var dt = $('#resultSet').DataTable().search(
+        $('#global_filter').val(),
+        $('#global_regex').prop('checked'),
+        $('#global_smart').prop('checked')
+    )
+dt.draw();
+}
+ 
+function filterColumn ( i ) {
+    $('#resultSet').DataTable().column( i ).search(
+        $('#col'+i+'_filter').val(),
+        $('#col'+i+'_regex').prop('checked'),
+        $('#col'+i+'_smart').prop('checked')
+    ).draw();
+}
+
+function searchHtml() {
+            return '<tr id="filter_global"> <td>Transaction search</td> <td align="center"><input type="text" class="global_filter" id="global_filter"></td> <td align="center"><input type="checkbox" class="global_filter" id="global_regex"></td> <td align="center"><input type="checkbox" class="global_filter" id="global_smart" checked="checked"></td> </tr>'
+	+' <td>Column - </td> <td align="center"><input type="text" class="column_filter" id="col0_filter"></td> <td align="center"><input type="checkbox" class="column_filter" id="col0_regex"></td> <td align="center"><input type="checkbox" class="column_filter" id="col0_smart" checked="checked"></td> </tr>';
+}
+ 
+function search_initHook() {
+	var table = $('#resultSet').DataTable
+    var $searchDiv = $("#resultSet_filter");
+
+		$searchDiv.prepend(searchHtml());
+
+    $(document.createElement("label"))
+      .html('*shift-click to sort on multiple columns')
+      .prependTo($searchDiv);
+
+	
+    $(document.createElement("button"))
+      .attr("id", "filter_btn")
+      .attr("class", "button pill")
+      .html('search')
+      .off('click')
+      .on('click', function (e) {
+          e.preventDefault();
+          console.log("https://datatables.net/examples/api/regex.html");
+          filterGlobal();
+      })
+      .appendTo($searchDiv);
+
+    $('input.search').off('click');
+
+    $('input.global_filter').on( 'keyup click', function () {
+    } );
+ 
+    $('input.column_filter').on( 'keyup click', function () {
+//        filterColumn( $(this).parents('tr').attr('data-column') );
+    } );
+}
+
+$(document).ready(function() {
+     console.log( 'header doc ready' )
+
+//$(':text').on( 'keyup', function () {
+//      console.log( this.value )
+//          var table = $('#resultSet').DataTable();
+//              table.search( this.value ).draw();
+//} );
+
+  console.log("search doc end");
+});
+
+%= end

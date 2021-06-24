@@ -40,7 +40,7 @@ sub startup {
 #  $self->app->log(Dumper($self->sessions));
 
   $self->sessions->cookie_domain('.grandstreet.group');
-  $self->sessions->samesite('None');
+  $self->sessions->samesite('Lax');
 
   $self->app->log->info($self->sessions);
 # Render the template "index.html.ep"
@@ -48,24 +48,39 @@ sub startup {
 #  $c->render;
 #} => 'index';
 
+	$r->any('/echo')->to(controller => 'main', action => 'echo');
+
   # Normal route to controller
   $r->any('/')->to(controller => 'main', action => 'index');
   $r->any('/debug/')->to(controller => 'main', action => 'debug');
-  $r->any('/auth/')->to(controller => 'main', action => 'index');
-  $r->any('/auth/test')->to(controller => 'main', action => 'test');
-  $r->any('/app/portal')->to(controller => 'main', action => 'portal');
+
+  $r->any('/app/log')->to(controller => 'main', action => 'log');
+  $r->any('/app/orderbook')->to(controller => 'main', action => 'orderbook');
+#  $r->any('/app/')->to(controller => 'main', action => '');
+  # or just one at a time
   $r->any('/app/selector')->to(controller => 'main', action => 'selector');
+
+  # data tables stuff
   $r->any('/data/')->to('Data#test');
   $r->get('/data/view/:schema/:view')->to('Data#view');
+  $r->websocket('/session')->to('Main#wsSession');
+  $r->websocket('/data/store')->to('Data#wsStore');
+  $r->websocket('/data/store/:schema/:view')->to('Data#wsStore');
+  #$r->any('/data/store/:schema/:view', [format => ['websocket', 'json', 'html']])->to('Data#store');
+  $r->get('/data/table/:schema/:view', [format => ['json', 'html']])->to('Data#view');
   $r->get('/data/view/:schema/:view', [format => ['json', 'html']])->to('Data#view');
   $r->any('/data/dump/:schema/:view/')->to(controller => 'data', action => 'dump');
+  # TODO  integrate
+  $r->any('/auth/')->to(controller => 'main', action => 'index');
+  $r->any('/auth/test')->to(controller => 'main', action => 'test');
 #  $r->get('/data/view/:proc')->to('Ajax::DBIx#dbic');
   $r->any('/brochure')->to(controller => 'main', action => 'brochure');
+  $r->any('/app/portal')->to(controller => 'main', action => 'portal');
+  $r->any('/facebook/oauth/postback')->to(controller => 'main', action => 'oauth_postback');
+  $r->post('/facebook/state')->to(controller => 'main', action => 'facebook_state');
   #  $r->post('/overexposed/login')->to(controller => 'main', action => 'login');
   #$r->post('/overexposed/find_game')->to(controller => 'main', action => 'find_game');
   #$r->any('/overexposed/logout')->to(controller => 'main', action => 'logout');
-  $r->any('/facebook/oauth/postback')->to(controller => 'main', action => 'oauth_postback');
-  $r->post('/facebook/state')->to(controller => 'main', action => 'facebook_state');
 
 }
 

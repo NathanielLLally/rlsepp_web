@@ -1,0 +1,54 @@
+%= javascript begin
+
+function format ( d ) {
+    // `d` is the original data object for the row
+    return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
+        '<tr>'+
+            '<td>moves:</td>'+
+            '<td>'+d.moves+'</td>'+
+        '</tr>'+
+        '<tr>'+
+            '<td>Extra info:</td>'+
+            '<td>And any further details here (images etc)...</td>'+
+        '</tr>'+
+    '</table>';
+}
+function initHook() {
+  var table = $('#resultSet').DataTable();
+  // Add event listener for opening and closing details
+    $('#resultSet tbody').on('click', 'td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row( tr );
+
+		console.log('click');
+ 
+        if ( row.child.isShown() ) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+        else {
+            // Open this row
+            row.child( format(row.data()) ).show();
+            tr.addClass('shown');
+        }
+    } );
+}
+function columns() {
+  var columns = []
+
+  columns.push({
+      "class":          "details-control",
+      "orderable":      false,
+      "data":           null,
+      "defaultContent": ""
+  });
+
+
+% foreach my $header (@$headers) {
+  columns.push({ data: "<%= $header %>"});
+% }
+  return columns;
+}
+
+%= end

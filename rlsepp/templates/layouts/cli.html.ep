@@ -1,0 +1,25 @@
+<!doctype html>
+<html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title><%= title %></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width">
+
+  %= include 'common_header'
+  <%= content_for 'header' %>
+
+</head>
+<body background-color="blue">
+  %= include 'header'
+  %= include 'navbar'
+  %= include 'queue'
+
+% if (defined session 'ssoid' ) {
+  <%= content %>
+% } else {
+
+% }
+
+  </body>
+</html>

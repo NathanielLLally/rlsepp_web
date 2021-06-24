@@ -1,0 +1,63 @@
+% content_for header => begin
+% end
+%# arrayref
+% my $transactions = session('transactions');
+
+%= javascript begin
+
+function queue_addTransaction(tag) {
+
+	console.log('queue_addTransaction');
+	setUser('_transaction_tag', tag)
+
+	var a = []
+		var t = getCookie('_transactions')
+		if (t) {
+			a = JSON.parse(atob(t))
+			console.log('_transaction cookie:'+a);
+		} else {
+			console.log('no getUser cookie');
+		}
+
+	a.push(tag)
+
+	setUser('_transactions', btoa(JSON.stringify(a)))
+	setUser('_jssesh', btoa(JSON.stringify(['_transaction_tag', '_transactions'])))
+
+	console.log('append to #queue '+tag);
+
+	let $button = $('<li><a class="navbar info active" href="#\>'+tag+'</a></li>');
+	$("#queue > ul").append($button);
+}
+
+$(document).ready(function() {
+
+%#  $("#transaction_tag").hide();
+  $("#transaction_tag").removeClass("active");
+  $("#queue > ul > li > a")
+    .off('click')
+    .on( 'click', function (e) {
+      e.preventDefault();
+  console.log('queue > li > a -> onclick')
+    $(this).addClass('active').parent().siblings().children('a').removeClass('active');
+    $(this).parent().children('li').not(this).removeClass('active');
+      var tag = $(this).html()
+       console.log('queue button '+tag);
+       $(".transaction_tag").html(tag);
+       $("#transaction_tag").html(tag);
+      $("#global_filter").val(tag);
+      $("#resultSet_filter").val(tag);
+%#      $("#execute");
+    });
+});
+%= end
+
+<div id="queue" class="navbar" >
+<ul>
+% if (ref($transactions) eq 'ARRAY') { 
+% foreach my $t (@$transactions) {
+  <li><a class="navbar info" href="#"><%= $t %></a></li>
+% }
+% }
+</ul>
+</div>

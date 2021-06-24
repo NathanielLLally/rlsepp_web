@@ -1,0 +1,47 @@
+%= javascript begin
+% my $i = 0;
+
+function toolbar() {
+  var table = $('#resultSet').DataTable();
+
+    var $toolbar = $("div.toolbar");
+    var $widget = $(document.createElement("div"))
+      .attr({id:"toggleColumns", class:"display"})
+      .appendTo($toolbar);
+    var $fieldOrder = $(document.createElement("div"))
+      .attr({id:"orderColumns", class:"display"})
+      .appendTo($toolbar);
+
+% foreach my $header (@$headers) {
+    $(document.createElement("a"))
+      .attr("class", "column-order button pill")
+      .html("<%= $header %>")
+      .off('click')
+      .on('click', function() {
+        $("#fieldorder").append($(this).html()+',');
+      })
+      .appendTo($fieldOrder);
+% }
+
+% foreach my $header (@$headers) {
+    $(document.createElement("a"))
+      .attr("class", "toggle-vis button pill")
+      .attr("data-column", "<%= $i++ %>")
+      .html("<%= $header %>")
+      .appendTo($widget);
+% }
+
+    $('a.toggle-vis').on( 'click', function (e) {
+     //   alert($(this).attr('data-column'));
+        e.preventDefault();
+ 
+        // Get the column API object
+        var column = table.column( $(this).attr('data-column') );
+//        console.log(column);
+ 
+        // Toggle the visibility
+        column.visible( ! column.visible() );
+
+    } );
+}
+%= end

@@ -1,8 +1,28 @@
 package Mojolicious::Sessions::DOM;
 use Mojo::Base 'Mojolicious::Sessions';
 use Mojo::JSON qw/encode_json decode_json/;
-use Mojo::Util qw(b64_decode b64_encode);
-use Data::Dumper;
+use Mojo::Util qw(b64_decode b64_encode dumper);
+use Try::Tiny;
+use MIME::Base64;
+
+=head2 is_base64
+
+=cut
+
+sub is_base64 {
+  #Returns the decoded data on success, undef on failure
+  my $data = shift;
+  return undef unless defined $data;
+  return(undef) unless ($data =~ /^[A-Za-z0-9+\/=]+$/); #test for valid Base64 string
+  if (length ($data)%4==0) {
+    print "Valid Base64\n";
+    my $decoded = decode_base64($data);
+    return( $decoded );
+  } else {
+    print "Invalid Base64\n";
+    return(undef);
+  }
+}
 
 has [qw(cookie_domain secure)];
 has cookie_name        => 'mojolicious';
@@ -33,6 +53,7 @@ sub load {
   my $fields = b64_decode $c->cookie($k);
   my $jssesh = $self->deserialize->($fields);
   $c->app->log->debug( "Mojolicious::Sessions::DOM load" );
+  $c->app->log->debug($k);
   $c->app->log->debug( $fields );
 
   $c->app->log->info($self->serialize->($session));
@@ -41,6 +62,10 @@ sub load {
     my $val = $c->cookie($key);
     if (defined $val) {
       $key =~ s/^_//;
+
+      if (is_base64($val)) {
+        $val = decode_json(decode_base64($val));
+      }
       $c->app->log->debug( "$key => $val" );
       $c->session($key, $val);
     }
@@ -89,6 +114,7 @@ sub store {
   #    $c->cookie($k, $session->{$k}, $options);
     }
   }
+  $c->app->log->info( dumper(\@fields) );
   $c->cookie('_jssesh',$self->serialize->(@fields), $options);
 
   

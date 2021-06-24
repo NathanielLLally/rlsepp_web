@@ -59,25 +59,19 @@ has 'column' => (
 #  new paradigm aeServer
 #    anything non-server specific will remain in ae
 #
-has 'dbh' => (
-	is => 'rw', 
-	isa => 'Any',
-  lazy =>1,
-	builder => '_dbh'
-);
 
-sub _dbh {
+sub dbh {
   my ($s, $db) = @_;
-	$s->app->log->info("dbh");
-
-  $s->app->log->debug(sprintf("dbh, db[%s]", $db || 'default'));
-  my $dbh;
+  $s->app->log->debug(sprintf("get dbh, db[%s]", $db || 'default'));
+  my $dbh = undef;
   try {
     $dbh = DBI->connect_cached($DSN,'postgres', '', {'RaiseError' => 1, AutoCommit => 1}) || die $DBI::errstr;
   } catch {
     if ($_ =~ /Unknown database/) {
 #      $s->createOrUpdateDatabase($db);
       $dbh = DBI->connect_cached($DSN,'postgres', '', {'RaiseError' => 1, AutoCommit => 1}) || die $DBI::errstr;
+    } else {
+      die $DBI::errstr;
     }
   };
 
@@ -91,9 +85,37 @@ sub _dbh {
       return 1 if $default and &$default(@_);
     }
   };
-=cut  
-  my @sv = $s->schemaviews($dbh);
+=cut
+
   $dbh;
+}
+
+#  Data->wsStore
+#
+sub saveUIPrefs {
+  my $s = shift;
+  my $d = shift;
+
+  my ($dbh, $sth, $fields, $sort) = ($s->dbh, undef, $d->{fields}, $d->{sort});
+  $sth = $dbh->prepare('insert into useraccesscontrol.uipref (ssoid, schema, view,fields,sortorder) values (?,?,?,?,?)');
+
+  
+  # chop
+  if ($fields =~ /(.*)\,$/) {
+    $fields = $1;
+  }
+  my $headers = $s->session('headers');
+  my @h = @$headers;
+
+  my @ff;
+#
+# [ [ 0, 'asc' ], [ 5, 'desc', 0 ] ]
+#
+  foreach my $f (@$sort) {
+    push @ff, @h[@{$f}[0]] . " " . @{$f}[1];
+  };
+  my $foo = join(',',@ff);
+  $sth->execute($d->{ssoid},$d->{schema},$d->{view},$fields,$foo);
 }
 
 sub getProcs {
@@ -107,6 +129,28 @@ sub getProcs {
     push @result, $row->[0];
   }
   return \@result;
+}
+
+
+{
+#  returns {fields: "a b c", sortorder: "b c"}
+  #
+  #
+sub getPrefs {
+  my ($s, $schema, $view, $ssoid) = @_;
+  $s->app->log->debug("getPrefs [$schema] [$view] [$ssoid]");
+  my ($dbh, $sth, $rs, $sql) = ($s->dbh, (undef) x 3);
+  $s->app->log->debug("have dbh");
+
+  my %r;
+		$sql = "select * from useraccesscontrol.uipref where schema = ? and view = ? and ssoid = ?;";
+		$s->app->log->debug($sql);
+  $sth = $dbh->prepare($sql);
+		$sth->execute($schema, $view, $ssoid);
+		$rs = $sth->fetchall_arrayref({});
+  $s->app->log->debug(dumper(\$rs));
+  $rs->[0];
+}
 }
 
 sub getTables {
@@ -134,7 +178,7 @@ sub SVrowcounts
 	$_SVrowcounts = {};
 
 	my $schemaviews = $s->schemaviews;
-  $s->app->log->debug(dumper(\$schemaviews));
+#  $s->app->log->debug(dumper(\$schemaviews));
 
 	my ($sql, $sth, $rs) = ((undef) x 3);
 	
@@ -147,7 +191,7 @@ sub SVrowcounts
   $sth = $dbh->prepare($sql);
 		$sth->execute();
 		$rs = $sth->fetchall_arrayref();
-  $s->app->log->debug(dumper(\$rs));
+#  $s->app->log->debug(dumper(\$rs));
 		$_SVrowcounts->{$v} = $rs->[0]->[0];
 	}
 }
@@ -169,6 +213,14 @@ sub schemaviews
 	return \@out;
 }
 
+sub schemaviewForColumns
+{
+	my ($s,$schemaview) = @_;
+  my $r = $s->SVcolumns();
+  $s->app->log->debug("schemaviewForColumns: $schemaview");
+  $r->{$schemaview};
+}
+
 sub SVcolumns {
   my ($s, $dbh) = @_;
 
@@ -185,45 +237,38 @@ select t.table_schema as schema_name,
     left join information_schema.columns c 
               on t.table_schema = c.table_schema 
               and t.table_name = c.table_name
-where table_type = ?
-      and t.table_schema not in ('information_schema', 'pg_catalog')
+    where t.table_schema not in ('information_schema', 'pg_catalog')
 order by schema_name,
          view_name;
 EOF
 ;
-#	$s->app->log->debug($sql);
+#where table_type = ?
+	$s->app->log->debug($sql);
 	if (not defined $dbh) {
 		$dbh = $s->dbh;
 	}
   $sth = $dbh->prepare($sql);
-  $sth->execute('VIEW');
+  $sth->execute();
   $rs = $sth->fetchall_arrayref({});
-	my ($last, $schema, $view, $columns, $column);
+	my ($last, $schema, $view);
 
 	$last = '';
-	$columns = [];
 	foreach my $row (@$rs) {
 		$s->setSchema($row->{'schema_name'}, 1);
 
 		$s->setSchemaView($row->{'schema_name'}.'.'.$row->{'view_name'}, 1);
 		
-	  $columns = $h{$row->{'schema_name'}.'.'.$row->{'view_name'}};
 	  $sv{$row->{'schema_name'}.'.'.$row->{'view_name'}} = 1;
-
-		if (not defined $columns) {
-			$columns = [];
-		}		
 
 		if (not $s->hasCol($row->{'schema_name'}.'.'.$row->{'view_name'})) {
 			$s->setCol($row->{'schema_name'}.'.'.$row->{'view_name'}, '');
 		}
 
 		my $col = $s->getCol($row->{'schema_name'}.'.'.$row->{'view_name'}) || '';
-		$col .= ' '.$row->{'col_name'};
+		$col .= ' '.$row->{'column_name'};
 		$s->setCol($row->{'schema_name'}.'.'.$row->{'view_name'}, $col);
 		
-	  push @$columns,$row->{'col_name'};
-  	 $h{$row->{'schema_name'}.'.'.$row->{'view_name'}} = $columns;
+    push @{$h{$row->{'schema_name'}.'.'.$row->{'view_name'}}},$row->{'column_name'};
 	}
 	$_dbInfo = \%h;	
 	$sv = \%sv;

@@ -24,11 +24,16 @@ function getUser(token, api) {
   if (val) return val;
   return null;
 }
+function getCookie(token) {
+  var val =  Cookies.get(token);
+  if (val) return val;
+  return null;
+}
 function setUser(token, val) {
 //  var key = '_'+api+'user'+token;
   var key = token
 
-  var opts = { domain: '.grandstreet.group' };
+  var opts = { domain: '.grandstreet.group', samesite: 'Lax' };
   Cookies.set(key, val, opts);
 }
 
@@ -56,6 +61,7 @@ function onSignIn(googleUser) {
       console.log('Email: ' + profile.getEmail());
       */
 
+//      $('a#portal_href').attr('href','/app/portal');
       $('a#login_href').attr('href','/app/portal');
       $('a#login_href').html('You may enter our portal');
 

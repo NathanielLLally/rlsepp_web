@@ -6,7 +6,7 @@
         <table>
 
 % foreach my $view (@$views) {
-                <tr><td> <%= $view %> </td><tr>
+<!--                <tr><td> <%= $view %> </td><tr> -->
 % }                
         </table>
 

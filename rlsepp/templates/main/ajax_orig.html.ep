@@ -1,25 +1,20 @@
 % title 'Grand St Group';
 % layout 'portal';
 %= javascript begin
-% my $i = 0;
+% my $i = 1;
 
 var data;
 
 console.log('loading');
 
 function init() {
-  var columns = []
-
-% foreach my $header (@$headers) {
-  columns.push({ data: "<%= $header %>"});
-% }
-  var table = $('#resultSet').DataTable( {
+    var table = $('#resultSet').DataTable( {
       "dom": '<"toolbar">frtip',
       bProcessing: true,
       bServerSide: true,
       sAjaxSource: "/data/view/<%= $schema %>/<%= $view %>.json",
       pageLength: 25,
-      columns: columns
+      colspan: 3
     } );
     var $toolbar = $("div.toolbar");
     var $widget = $(document.createElement("div"))
@@ -29,16 +24,21 @@ function init() {
       .html('*shift-click to sort on multiple columns')
       .appendTo($toolbar);
 
+    $(document.createElement("div"))
+      .html('*shift-click to sort on multiple columns')
+      .appendTo($toolbar);
+
+
 % foreach my $header (@$headers) {
     $(document.createElement("a"))
       .attr("class", "toggle-vis")
       .attr("data-column", "<%= $i++ %>")
-      .html("<%= $header %>&nbsp;")
+      .html("<%= $header %>")
       .appendTo($widget);
 % }  
 
     $('a.toggle-vis').on( 'click', function (e) {
-     //   alert($(this).attr('data-column'));
+        alert($(this).attr('data-column'));
         e.preventDefault();
  
         // Get the column API object
@@ -48,6 +48,7 @@ function init() {
         // Toggle the visibility
         column.visible( ! column.visible() );
     } );
+    console.log(table);
 }
 
 $(document).ready(function() {

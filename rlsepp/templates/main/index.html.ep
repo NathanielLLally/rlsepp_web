@@ -15,8 +15,11 @@
 
   <ul>
 % my $html;
+<!-- <li><a id="login_href" class="button pill" href="">Please SSO</a></li> -->
+% if ($mode eq 'development') {
 % if (lc($useremail) eq 'nathaniel.lally@gmail.com') { $html = '<li><a href="/brochure">Exchange</a></li>'; } else { $html = '<li><a href="/brochure">Client Portal</a></li>'; } 
-<li><a href="/brochure">Client Portal</a></li>
+<li><a id="portal_href" href="/brochure">Client Portal</a></li>
+% }
 	<li><a style="float:right" href="mailto:sales@grandstreet.group">Contact Us</a></li>
   </ul>
   </div>

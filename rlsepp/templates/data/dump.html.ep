@@ -1,0 +1,8 @@
+% title 'GSG Member Portal';
+% layout 'portal';
+<center>
+        <table>
+                <tr><td> <%= "$schema.$view" %> </td><tr>
+        </table>
+
+  </center>

@@ -1,0 +1,109 @@
+% my $ssoid = session('ssoid');
+% my $search = session('search');
+% my $order_by = stash('order_by')|| session('order_by');
+% my @order_by;
+% if (ref($order_by) && ref($order_by) eq 'ARRAY') {
+%   @order_by = @$order_by;
+% }
+
+%= javascript begin
+% my $i = 1;
+
+function wsTest(sortArray) {
+      if (!("WebSocket" in window)) {
+        alert('Your browser does not support WebSockets!');
+        return;
+      }
+
+      console.log("wsTest:2324 "+"<%= $socket %>");
+      var ws = new WebSocket("<%= $socket %>");
+      ws.onopen = function () {
+				var fieldString = $("#fieldorder").html();
+        var json = {
+          ssoid: "<%= $ssoid %>",
+          view: "<%= $view %>",
+          schema: "<%= $schema %>",
+          search: "<%= $search %>",
+<!--  we want the sort order directly from the datatable object, it's much easier then synchronizing server/client -->
+<!-- order_by: ["<%= join(',',@order_by); %>"], -->
+          fields: fieldString,
+          sort: sortArray,
+          };
+
+        ws.send(JSON.stringify(json));
+      };
+      ws.onmessage = function (evt) {
+        console.log('wsTest');
+			console.log(evt);
+        var data = JSON.parse(evt.data);
+      };
+}
+
+function wsInsert(sortArray) {
+      if (!("WebSocket" in window)) {
+        alert('Your browser does not support WebSockets!');
+        return;
+      }
+
+      var ws = new WebSocket("<%= $url %>");
+      ws.onopen = function () {
+				var fieldString = $("#fieldorder").html();
+        var json = {
+          ssoid: "<%= $ssoid %>",
+          view: "<%= $view %>",
+          schema: "<%= $schema %>",
+          search: "<%= $search %>",
+<!--  we want the sort order directly from the datatable object, it's much easier then synchronizing server/client -->
+<!-- order_by: ["<%= join(',',@order_by); %>"], -->
+          fields: fieldString,
+          sort: sortArray,
+          };
+
+        ws.send(JSON.stringify(json));
+      };
+      ws.onmessage = function (evt) {
+        console.log('wsInsert');
+			console.log(evt);
+        var data = JSON.parse(evt.data);
+        $('#fieldorder').html('');
+        $('#fieldorder').append(data);
+      };
+}
+
+function toolbar_saveuiprefs() {
+  var table = $('#resultSet').DataTable();
+
+    var $toolbar = $("#toggleColumns");
+
+    $(document.createElement("button"))
+      .attr("id", "clearfield")
+      .html("<b>clear</b>")
+      .off('click')
+      .on( 'click', function (e) {
+          e.preventDefault();
+          $("#fieldorder").html('');
+      })
+      .prependTo($toolbar);
+
+    var btn = $(document.createElement("label"))
+      .attr("id", "fieldorder")
+      .html("")
+      .prependTo($toolbar);
+
+    var btn = $(document.createElement("button"))
+      .attr("id", "saveuiprefs")
+      .html("<b>save</b>")
+      .on( 'click', function (e) {
+          e.preventDefault();
+		console.log("<%= url_for('data/store')->to_abs %>");
+      <!-- console.dir(JSON.stringify(table.context[0].aoHeader[0][0],null,4)); -->
+<!--      console.dir(JSON.stringify(table.context[0].aaSorting,null,4)); -->
+      var sortArray = table.context[0].aaSorting;
+ 				wsInsert(sortArray); 
+ 				wsTest(sortArray); 
+console.log("exit save ui prefs");
+
+          })
+      .prependTo($toolbar);
+}
+%= end

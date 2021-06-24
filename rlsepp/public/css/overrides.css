@@ -3,6 +3,17 @@ body {
   color: black;
 }
 
+a
+{
+  font-size:2em;
+}
+
+
+a:visited
+{
+  color:#000;
+}
+
 .dataTable
 {
   overflow-x: scroll;
@@ -14,13 +25,37 @@ body {
   overflow-x: scroll;
 }
 
+.dataTables_filter
+{
+  display: block;
+}
+
+.button
+{
+  margin: 0px 0px 0px 0px;
+}
+
 .toggle-vis
 {
   cursor: pointer;
-  margin-right: 6px;
+  margin-right: 1px;
+  margin-left: 1px;
+  margin: 0px 0px 0px 0px;
+  float: none;
+  display: inline;
 }
 
 a.toggle-vis:hover
 {
-  text-decoration: underline;
+ /* text-decoration: underline;
+  */
 }
+
+td.details-control {
+      background: url('/img/details_open.png') no-repeat center center;
+          cursor: pointer;
+}
+tr.shown td.details-control {
+      background: url('/img/details_close.png') no-repeat center center;
+}
+

@@ -1,0 +1,20 @@
+%= include 'data/toolbar1'
+%= javascript begin
+
+function columns() {
+  var columns = []
+
+  columns.push({
+      "class":          "details-control",
+      "orderable":      false,
+      "data":           null,
+      "defaultContent": ""
+  });
+
+% foreach my $header (@$headers) {
+  columns.push({ data: "<%= $header %>"});
+% }
+  return columns;
+}
+
+%= end

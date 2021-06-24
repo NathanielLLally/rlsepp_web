@@ -1,0 +1,31 @@
+% title 'Images in dB';
+% layout 'default';
+  <div id="container">
+
+        <div id="main" role="main">
+
+dB total: <%=  @$images %>
+<br>
+<div id="seehires">
+<table width=100% height=100%>
+% my $i = 0;
+% for my $img (@$images) {
+%   if (($i++ % 5) == 0) {
+  <tr>
+%   }
+<td>
+ <%= $img->{name} %> <br>
+ size: <%= $img->{size} %>: <br>
+ b64len: <%= $img->{len} %>: <br>
+ <div class="thumbnail">
+ <img src="<%= $img->{src} %>" />
+ </div>
+</td>
+%   if (($i % 5) == 0) {
+  </tr>
+%   }
+% }
+</table>
+</div>
+        </div>
+  </div>

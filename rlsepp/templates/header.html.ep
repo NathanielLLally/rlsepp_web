@@ -1,2 +1,3 @@
 % content_for header => begin
+<link rel="shortcut icon" href="/img/GSG_BW_favicon.png" />
 % end 
