@@ -43,6 +43,8 @@ sub startup {
   $self->sessions->samesite('Lax');
 
   $self->app->log->info($self->sessions);
+
+
 # Render the template "index.html.ep"
 #get '/' => sub ($c) {
 #  $c->render;

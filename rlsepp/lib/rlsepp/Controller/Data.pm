@@ -20,7 +20,6 @@ sub view {
   my $s = shift;
   my ($dbh, $sth, $rs, %opt, @headers, @data) = ($s->dbh, (undef) x 2, (), (), ());
 
-#  $s->app->log->debug('***********'.dumper($s->session));
   my $ssoid = $s->session('ssoid');
   $s->app->log->debug('ssoid '.$ssoid);
 

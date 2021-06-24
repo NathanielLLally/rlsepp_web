@@ -1,32 +1,28 @@
 % content_for header => begin
 % end
 %# arrayref
-% my $transactions = session('transactions');
+%= include 'session'
+% my $transactions = session 'js_transaction_queue';
 
 %= javascript begin
 
 function queue_addTransaction(tag) {
 
 	console.log('queue_addTransaction');
-	setUser('_transaction_tag', tag)
 
-	var a = []
-		var t = getCookie('_transactions')
-		if (t) {
-			a = JSON.parse(atob(t))
-			console.log('_transaction cookie:'+a);
-		} else {
-			console.log('no getUser cookie');
-		}
+  wsSession('transaction_queue', null, function(data) { 
+      console.log('queue_addTR get CB');
+			console.log(data)
+      let queue = data.value || [];
+      queue.push(tag);
+  wsSession('transaction_queue', queue, function(data) { 
+      console.log('queue_addTR set CB');
+      console.log(data);
+    });
+  });
 
-	a.push(tag)
-
-	setUser('_transactions', btoa(JSON.stringify(a)))
-	setUser('_jssesh', btoa(JSON.stringify(['_transaction_tag', '_transactions'])))
-
-	console.log('append to #queue '+tag);
-
-	let $button = $('<li><a class="navbar info active" href="#\>'+tag+'</a></li>');
+  let html = '<li><a class="navbar info active" href="#\>'+tag+'</a></li>';
+	let $button = $(html);
 	$("#queue > ul").append($button);
 }
 

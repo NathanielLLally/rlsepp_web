@@ -29,12 +29,36 @@ function getCookie(token) {
   if (val) return val;
   return null;
 }
+function setCookie(token, val) {
+  setUser(token,val);
+}
 function setUser(token, val) {
 //  var key = '_'+api+'user'+token;
   var key = token
 
   var opts = { domain: '.grandstreet.group', samesite: 'Lax' };
   Cookies.set(key, val, opts);
+}
+
+function wsSession(json) {
+
+  console.table(json);
+  if (!("WebSocket" in window)) {
+    alert('Your browser does not support WebSockets!');
+    return;
+  }
+
+  var ws = new WebSocket("ws://portal.grandstreet.group/session");
+  ws.onopen = function () {
+    console.log(json)
+    ws.send(JSON.stringify(json));
+  };
+  ws.onmessage = function (evt) {
+    console.log('wsSession on message');
+    var data = JSON.parse(evt.data);
+		console.table(data);
+    setCookie('sid', data.sid);
+  };
 }
 
 //see console within browser for execution
@@ -44,6 +68,9 @@ function onSignIn(googleUser) {
       profile = googleUser.getBasicProfile();
       idToken = googleUser.getAuthResponse().id_token;
 
+	let sid = getCookie('sid');
+	console.log('cookie sid :'+sid);
+
   setUser('_guserid', profile.getId())
   setUser('_gusername', profile.getName())
   setUser('_guserimageurl', profile.getImageUrl())
@@ -51,6 +78,15 @@ function onSignIn(googleUser) {
   setUser('_useremail', profile.getEmail())
 
   setUser('_jssesh', btoa(JSON.stringify(['_useremail', '_guserid', '_guseremail', '_gusername', '_guserimageurl'])))
+
+	let json = {
+		guserid: profile.getId(),
+	  gusername: profile.getName(),
+	  guserimageurl: profile.getImageUrl(),
+	  guseremail: profile.getEmail(),
+	  useremail: profile.getEmail(),
+	};
+	wsSession(json);
 
 /*
       console.log('ID: ' + profile.getId());

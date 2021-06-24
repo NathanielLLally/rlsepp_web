@@ -5,6 +5,7 @@ use DBI;
 use Try::Tiny;
 use Data::Dumper;
 use Mojo::Util qw/dumper/;
+use Mojo::JSON qw(decode_json encode_json);
 
 #our $DSN = "dbi:Pg:dbname=rlsepp;host=goshawk.grandstreet.group;port=5432";
 our $DSN = "DBI:Pg:dbname=rlsepp;host=54.219.185.152;port=5432";
@@ -71,7 +72,7 @@ sub dbh {
 #      $s->createOrUpdateDatabase($db);
       $dbh = DBI->connect_cached($DSN,'postgres', '', {'RaiseError' => 1, AutoCommit => 1}) || die $DBI::errstr;
     } else {
-      die $DBI::errstr;
+      $s->app->log->error('hmmm '.$DBI::errstr );
     }
   };
 
@@ -88,6 +89,41 @@ sub dbh {
 =cut
 
   $dbh;
+}
+
+sub retrieveSessionDb {
+  my $s = shift;
+  my $sid = shift;
+
+  my ($dbh, $sth) = ($s->dbh, undef );
+  $sth = $dbh->prepare('select session from useraccesscontrol.session where sid = ?');
+  $sth->execute($sid);
+  while (my $result = $sth->fetchrow_hashref) {
+    $s->app->log->debug(dumper($result));
+  }
+}
+
+sub storeSessionDb {
+  my $s = shift;
+  my $d = shift;
+  my $sid = shift;
+
+  my ($dbh, $sth) = ($s->dbh, undef );
+  if (not defined $dbh) {
+    $s->app->log->error('no dbh handle');
+  }
+  if (not defined $sid) {
+    $s->app->log->info('sdb insert (no sid) '.dumper(\$d));
+    $sth = $dbh->prepare('insert into useraccesscontrol.session (session) values (?) returning sid');
+    $sth->execute(encode_json($d));
+  } else {
+    $s->app->log->info('sdb insert');
+    $sth = $dbh->prepare('insert into useraccesscontrol.session (session) values (?) where sid = ? returning sid');
+    $sth->execute(encode_json($d),$sid);
+  }
+  while (my $result = $sth->fetchrow_hashref) {
+    return $result->{sid};
+  }
 }
 
 #  Data->wsStore

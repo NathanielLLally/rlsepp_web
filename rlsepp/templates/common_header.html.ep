@@ -6,6 +6,7 @@
 %= stylesheet_nc '/css/navbar.css'
 %= stylesheet_nc '/css/overrides.css'
 %= stylesheet 'https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.min.css'
+%= javascript '/js/autobahn.min.js'
 %= javascript '/js/jquery-3.3.1.min.js'
 %= javascript '/js/libs/underscore-min.js'
 %= javascript 'https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js'

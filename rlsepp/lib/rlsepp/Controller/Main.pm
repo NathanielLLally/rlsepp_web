@@ -18,8 +18,7 @@ use rlsepp::Auth;
 
 sub wsSession {
   my $s = shift;
-  my $format = $s->stash('format');
-  $s->app->log->debug("ws://main:wsSession format $format");
+  $s->app->log->debug("ws://main:wsSession");
 
   # Increase inactivity timeout for connection a bit (what was it?)
   $s->inactivity_timeout(300);
@@ -28,25 +27,25 @@ sub wsSession {
       my ($ws, $data) = @_;
       
       $s->app->log->debug('main::wsSession->'.dumper(\$data));
-      my $err = 'sahksess';
+      my %json = ();
       try {
-        foreach (my ($k, $v) = each %$data) {
-          $s->app->log->debug("$k => $v");
-        }
+        my $sid = $s->storeSessionDb($data);
+      $s->app->log->debug('main::wsSession->store returned sid '.$sid);
+
+        $json{sid} = $sid;
       } catch {
         if ($_) {
-          $err = $_;
+          $s->app->log->error($_);
         }
       };
-      $ws->send({json => {status => "insert status: $err"}});
+      $ws->send({json => \%json});
 
       });
 
   # Incoming message
-#  $s->on(message => sub ($s, $msg) {
-#    $s->app->log->debug("on message $msg");
-#    $s->send("echo: $msg");
-#  });
+  $s->on(message => sub ($s, $msg) {
+    $s->app->log->debug("on message $msg");
+  });
 
   # Closed
   $s->on(finish => sub ($s, $code, $reason = undef) {
@@ -77,9 +76,11 @@ sub index {
   my $s = shift;
   $s->app->log->debug( ' req query  '.$s->req->url->query );
   $s->app->log->info("index");
-  $s->app->log->debug("Controller::Main: session: ".$s->session);
-  $s->app->log->debug("Controller::Main: session: ".dumper($s->session));
 #  $s->res->headers->cache_control('max-age=1, no-cache');
+
+#  my $sid = $s->storeSessionDb('{}');
+#  $s->session(sid => $sid);
+#  $s->app->log->info("db session id [$sid]");
 
   # TODO: hypnotoad
   $s->stash(mode => $s->app->mode);
