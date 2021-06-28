@@ -1,0 +1,65 @@
+<script type="module">
+  import { default as WebSocketClient } from "/js/websocket-async.esm.js"
+function getUser(token, api) {
+  var key = '_'+api+'user'+token;
+  var val =  Cookies.get(key);
+  if (val) return val;
+  return null;
+}
+function getCookie(token) {
+  var val =  Cookies.get(token);
+  if (val) return val;
+  return null;
+}
+function setCookie(token, val) {
+  setUser(token,val);
+}
+function setUser(token, val) {
+//  var key = '_'+api+'user'+token;
+  var key = token
+
+  var opts = { domain: '.grandstreet.group', samesite: 'Lax' };
+  Cookies.set(key, val, opts);
+}
+async function onSignIn(googleUser) {
+  var idToken;
+  var profile;
+      profile = googleUser.getBasicProfile();
+      idToken = googleUser.getAuthResponse().id_token;
+
+
+	let json = {
+		guserid: profile.getId(),
+	  gusername: profile.getName(),
+	  guserimageurl: profile.getImageUrl(),
+	  guseremail: profile.getEmail(),
+	  useremail: profile.getEmail(),
+	};
+
+  const ws = new WebSocketClient;
+  await ws.connect('wss://portal.grandstreet.group/session');
+  console.log('esm module wss://connected')
+  ws.send(JSON.stringify(json));
+  let data = await ws.receive();
+  let jsonData = JSON.parse(data);
+  setCookie('sid', jsonData.sid);
+	let sid = getCookie('sid');
+	console.log('cookie sid :'+sid);
+
+  if (ws.dataAvailable !== 0) {
+    console.log(await ws.receive());
+  }
+  // Close the connection.
+  await ws.disconnect();
+
+      $('a#portal_href').attr('href','/app/portal?sid='+sid);
+
+      $('a#login_href').attr('href','/app/portal');
+      $('a#login_href').html('You may enter our portal');
+
+      $('.useremail').html(getUser('email', 'g'));
+      $('.useroauth').html("<pre><p>"+getUser('name', 'g')+"<img src=\""+getUser('imageurl','g')+"\"/></pre>");
+}
+window.googleOnSignIn = onSignIn;
+export default onSignIn;
+</script>
