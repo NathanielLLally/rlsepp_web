@@ -6,8 +6,11 @@
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width">
 
-  %= include 'common_header'
   <%= content_for 'header' %>
+<meta name="google-signin-client_id" content="17870503823-it9a6qsdstdb8jpg8f16qpqmqg0m6cnt.apps.googleusercontent.com" />
+<script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+
+  %= include 'common_header'
 
 </head>
 <body>

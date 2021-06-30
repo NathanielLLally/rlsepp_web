@@ -6,6 +6,7 @@ use Try::Tiny;
 use Data::Dumper;
 use Mojo::Util qw/dumper/;
 use Mojo::JSON qw(decode_json encode_json);
+use Carp;
 
 #our $DSN = "dbi:Pg:dbname=rlsepp;host=goshawk.grandstreet.group;port=5432";
 our $DSN = "DBI:Pg:dbname=rlsepp;host=54.219.185.152;port=5432";
@@ -70,7 +71,11 @@ sub dbh {
   } catch {
     if ($_ =~ /Unknown database/) {
 #      $s->createOrUpdateDatabase($db);
-      $dbh = DBI->connect_cached($DSN,'postgres', '', {'RaiseError' => 1, AutoCommit => 1}) || die $DBI::errstr;
+      try {
+        $dbh = DBI->connect_cached($DSN,'postgres', '', {'RaiseError' => 1, AutoCommit => 1}) || die $DBI::errstr;
+      } catch {
+        $s->app->log->error('hmmm '.$DBI::errstr );
+      };
     } else {
       $s->app->log->error('hmmm '.$DBI::errstr );
     }
@@ -94,19 +99,21 @@ sub dbh {
 sub retrieveSessionDb {
   my $s = shift;
   my $sid = shift;
+  croak "must pass session id, passed [$sid]" unless (defined $sid);
 
   my ($dbh, $sth) = ($s->dbh, undef );
   $sth = $dbh->prepare('select session from useraccesscontrol.session where sid = ?');
   $sth->execute($sid);
   while (my $result = $sth->fetchrow_hashref) {
-    $s->app->log->debug(dumper($result));
+    $s->app->log->debug(dumper($result->{session}));
+    return decode_json($result->{session});
   }
 }
 
 sub storeSessionDb {
   my $s = shift;
-  my $d = shift;
-  my $sid = shift;
+  my $d = shift || {};
+  my $sid = shift || $s->{sid};
 
   my ($dbh, $sth) = ($s->dbh, undef );
   if (not defined $dbh) {
@@ -114,11 +121,11 @@ sub storeSessionDb {
   }
   if (not defined $sid) {
     $s->app->log->info('sdb insert (no sid) '.dumper(\$d));
-    $sth = $dbh->prepare('insert into useraccesscontrol.session (session) values (?) returning sid');
+    $sth = $dbh->prepare('insert into useraccesscontrol.session (session) values (?) on conflict ((session->>\'useremail\')) do update set session = EXCLUDED.session returning sid');
     $sth->execute(encode_json($d));
   } else {
     $s->app->log->info('sdb insert');
-    $sth = $dbh->prepare('insert into useraccesscontrol.session (session) values (?) where sid = ? returning sid');
+    $sth = $dbh->prepare('update useraccesscontrol.session set session = ? where sid = ? returning sid');
     $sth->execute(encode_json($d),$sid);
   }
   while (my $result = $sth->fetchrow_hashref) {
@@ -485,5 +492,5 @@ sub createOrUpdateDatabase
 }
 
 no Moose;
-__PACKAGE__->meta->make_immutable;
+__PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 1;

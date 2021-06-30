@@ -16,42 +16,6 @@ use Mojolicious::Sessions;
 
 use rlsepp::Auth;
 
-sub wsSession {
-  my $s = shift;
-  $s->app->log->debug("ws://main:wsSession");
-
-  # Increase inactivity timeout for connection a bit (what was it?)
-  $s->inactivity_timeout(300);
-
-  $s->on( json => sub {
-      my ($ws, $data) = @_;
-      
-      $s->app->log->debug('main::wsSession->'.dumper(\$data));
-      my %json = ();
-      try {
-        my $sid = $s->storeSessionDb($data);
-      $s->app->log->debug('main::wsSession->store returned sid '.$sid);
-
-        $json{sid} = $sid;
-      } catch {
-        if ($_) {
-          $s->app->log->error($_);
-        }
-      };
-      $ws->send({json => \%json});
-
-      });
-
-  # Incoming message
-  $s->on(message => sub ($s, $msg) {
-    $s->app->log->debug("on message $msg");
-  });
-
-  # Closed
-  $s->on(finish => sub ($s, $code, $reason = undef) {
-    $s->app->log->debug("WebSocket closed with s[$s]code [$code] reason[$reason]");
-  });
-}
 
 sub echo {
   my $c = shift;
@@ -103,8 +67,8 @@ sub brochure {
   $s->stash(mode => $s->app->mode);
   my ($guserid, $guseremail, $gusername, $guserimageurl) = 
     ($s->session('guserid'), $s->session('guseremail'), $s->session('gusername'), $s->session('guserimageurl'));
-  $s->app->log->debug("Controller::Main: session: ".$s->session);
-  $s->app->log->debug("Controller::Main: session: ".dumper($s->session));
+  $s->app->log->debug("session:".dumper($s->session));
+  $s->app->log->debug("session: [".$s->session."]");
   $s->app->log->debug("$guserid, $guseremail, $gusername, $guserimageurl");
 
   #/index googleAuthWeb -> Cookie::js_sesh
@@ -127,13 +91,23 @@ sub brochure {
 sub portal {
   my $s = shift;
 
+  my $sid = $s->req->param('sid') || $s->session('sid');
+  $s->session(sid => $sid);
+
+  my $sessionDb = $s->retrieveSessionDb($sid);
+
+  # TODO: look at Mojolicious::Session for transparent this
+  #
+  foreach my $key (keys %$sessionDb) {
+    $s->app->log->debug( $sessionDb->{$key});
+    $s->session($key => $sessionDb->{$key});
+  }
+
+  $s->app->log->debug("Portal session:".dumper($s->session));
   $s->app->log->debug( ' req query  '.$s->req->url->query );
   $s->stash(mode => $s->app->mode);
-	$s->session(views => $s->schemaviews);
-  $s->stash(url => $s->url_for('/data/store')->to_abs->scheme('ws'));
-  $s->app->log->debug("views:".dumper($s->stash('views')));
-  $s->app->log->debug("sessoid:".$s->session('ssoid'));
-  $s->app->log->debug("session useremail:".$s->session('useremail'));
+#	$s->session(views => $s->schemaviews);
+  $s->stash(url => $s->url_for('/data/store')->to_abs->scheme('wss'));
 
   #$s->res->headers->cache_control('max-age=1, no-cache');
 
@@ -143,10 +117,10 @@ sub portal {
   #  sometimes, new browser, will require, a two times user interaction
   #  to avoid this redirect
   #
-  if (not $s->session('ssoid')) {
-    $s->redirect_to('/');
-    return;
-  }
+#  if (not $s->session('ssoid')) {
+#    $s->redirect_to('/');
+#    return;
+#  }
 
 #  my $tables = $s->getTables();
 #  $s->stash(tables => $tables);
@@ -154,10 +128,6 @@ sub portal {
 #  $dbh->selectall_hashref($statement, $key_field);
 
   #authenticated user is logged in
-  $s->stash(ssoid => $s->session('ssoid'));
-  $s->stash(roles => $s->session('roles'));
-
-  $s->app->log->debug("stash userid:".$s->stash('userid'));
 #  $s->stash(useremail => $s->session('_useremail'));
 #  $s->render(status => 200, text => $s->session('_useremail'));
   $s->render;
@@ -234,10 +204,42 @@ sub selector
 {
   my $s = shift;
   $s->stash(mode => $s->app->mode);
-  if (not $s->session('ssoid')) {
+  my $sid = $s->req->param('sid') || $s->session('sid');
+  if (not $s->session('sid')) {
     $s->redirect_to('/');
     return;
   }
+
+  my $sessionDb = $s->retrieveSessionDb($sid);
+
+  # TODO: look at Mojolicious::Session for transparent this
+  #
+  foreach my $key (keys %$sessionDb) {
+    $s->app->log->debug( $sessionDb->{$key});
+    $s->session($key => $sessionDb->{$key});
+  }
+  $s->render(status => 200);
+}
+
+sub monitor
+{
+  my $s = shift;
+  $s->stash(mode => $s->app->mode);
+  my $sid = $s->req->param('sid') || $s->session('sid');
+  if (not $s->session('sid')) {
+    $s->redirect_to('/');
+    return;
+  }
+
+  my $sessionDb = $s->retrieveSessionDb($sid);
+
+  # TODO: look at Mojolicious::Session for transparent this
+  #
+  foreach my $key (keys %$sessionDb) {
+    $s->app->log->debug( $sessionDb->{$key});
+    $s->session($key => $sessionDb->{$key});
+  }
+
   $s->render(status => 200);
 }
 

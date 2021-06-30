@@ -1,5 +1,5 @@
 em {
-  color: red;
+/*  color: red;*/
 }
 
 .section { position: relative; margin: 0 auto; width: 100%; overflow: hidden;
@@ -25,8 +25,8 @@ td, th {
 }
 
 td {
-  color: #FFF;
-  text-align: center;
+/*  color: #FFF;*/
+/*  text-align: center;*/
 }
 
 th {
@@ -42,7 +42,7 @@ th {
 }
 
 table {
- background: rgba(40, 0, 0, .5);
+/* background: rgba(40, 0, 0, .5);*/
 }
 
 .text { display: block; font-size: 1.2em; color: #17516E;font-family: "Courier", "Courier New"; background: #CC99FF; padding: 12px; margin-bottom: 2px; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; 
@@ -222,11 +222,10 @@ body {
   color: black;
 }
 body {
-/*  background: #999 url(/img/gum-15-1600.jpg); */
+  background: #999 url(/img/bg-linen.jpg); */
   background-size: 100%;
-  font-size: 18px;
-  line-height: 1.231;
-  font-size: 100%;
+  line-height: 1.131;
+  font-size: 90%;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
 }

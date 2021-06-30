@@ -1,4 +1,4 @@
-%= javascript begin
+<script>
 
 function filterGlobal () {
 	console.log($('#global_filter').val());
@@ -68,4 +68,4 @@ $(document).ready(function() {
   console.log("search doc end");
 });
 
-%= end
+</script>

@@ -1,1 +1,17 @@
-<%= content %>
+<!doctype html>
+<html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title><%= title %></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width">
+
+  <%= content_for 'header' %>
+
+</head>
+<body>
+  <%= content %>
+
+</body>
+</html>
+

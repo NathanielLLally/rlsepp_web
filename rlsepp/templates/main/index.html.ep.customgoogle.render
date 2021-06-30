@@ -4,21 +4,25 @@
 % my $useremail = session('useremail') || '';
 	<table>
 		<tr>
-			<td><img src="img/GSG_Logo_BlackWhite_263_60.png" width="526" height="120"/></td>
+			<td><img src="img/GSG_Logo_BlackWhite_263_60.png" width="789" height="180"/></td>
 		</tr>
 		<tr><td>
 		<h2 style="color:powderblue;">	&nbsp&nbsp Our mission is to produce exceptional returns for our investors.  We utilize consumer goods market arbitrage, currency exchange, and network security</h2>
       </td>
 		</tr>
 	</table>
+</div>
   <div class="navbar">
+
   <ul>
+
 <li><a id="portal_href" href="/brochure">Client Portal</a></li>
 	<li><a style="float:right" href="mailto:sales@grandstreet.group">Contact Us</a></li>
   </ul>
   </div>
 <div><table><tr valign="middle"><td>
 %# <!-- https://developers.google.com/identity/sign-in/web/build-button -->
+  <div id="my-signin2"></div>
 <script>
     function onSuccess(googleUser) {
 			window.googleOnSignIn(googleUser);
@@ -40,11 +44,10 @@
     }
 
 </script>
-  <div class="navbar">
-<div class="g-signin2" data-onsuccess="onSuccess" data-onfailure="onFailure" data-width="200" data-height="50" theme-"dark"></div>
+%# <!--  <div class="g-signin2" data-onsuccess="onSignIn" data-onfailure="onSignInFailure" data-width="200" data-height="75" data-longtitle="false"/> -->
   </td><td>
-  <span class="guserimage" ></span>
-  <span class="useremail"></span>
+  <b><span class="useremail" /></b>
+  <span class="guserimage" />
+  </td></tr></table>
 </div>
-  </td></tr></table></div>
 

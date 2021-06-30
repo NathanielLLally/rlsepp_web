@@ -1,35 +1,20 @@
 % content_for header => begin
 % end
 %# arrayref
-%= include 'session'
-% my $transactions = session 'js_transaction_queue';
+%= include 'session.mjs';
+% my $transactions = [];
 
-%= javascript begin
-
-function queue_addTransaction(tag) {
+<script>
+function queue_addTransaction_helper(tag) {
 
 	console.log('queue_addTransaction');
 
-  wsSession('transaction_queue', null, function(data) { 
-      console.log('queue_addTR get CB');
-			console.log(data)
-      let queue = data.value || [];
-      queue.push(tag);
-  wsSession('transaction_queue', queue, function(data) { 
-      console.log('queue_addTR set CB');
-      console.log(data);
-    });
-  });
+  let html = '<li><a class="navbar info" href="#">'+tag+'</a></li>';
 
-  let html = '<li><a class="navbar info active" href="#\>'+tag+'</a></li>';
-	let $button = $(html);
-	$("#queue > ul").append($button);
-}
+  let sel = '#queue > ul > li > a:contains('+tag+')';
+  $(sel).remove();
+  $("#queue > ul").append(html);
 
-$(document).ready(function() {
-
-%#  $("#transaction_tag").hide();
-  $("#transaction_tag").removeClass("active");
   $("#queue > ul > li > a")
     .off('click')
     .on( 'click', function (e) {
@@ -45,15 +30,64 @@ $(document).ready(function() {
       $("#resultSet_filter").val(tag);
 %#      $("#execute");
     });
+}
+
+function queue_addTransaction(tag) {
+  queue_addTransaction_helper(tag);
+  session_addTransactions();
+}
+function session_addTransactions() {
+  let a = []
+
+  let s = window.session;
+
+  $('#queue > ul > li > a').map( (i,el) => {
+//     if (s.transactions) {
+//       if (! s.transactions.includes( $(el).text() )) {
+         a.push( $(el).text() )
+//       }
+//     }
+    });
+//  console.log('queue.html.ep');
+//  console.log(window.session);
+
+  //store session
+  window.session = {
+    ...s,
+    ...{transactions: a}
+  };
+  window.wsSession();
+}
+
+$(document).ready(function() {
+
+window.sessionEvent.addEventListener('session', (e) => {
+  console.log('window session event listener from queue '+e.detail);
+//  console.log('queue.html.ep');
+//  console.log(window.session);
+  let t = window.session.transactions;
+  if (t) {
+    for (trans of t) {
+      queue_addTransaction_helper(trans);
+    }
+  }
+
+})
+
+window.wsSession();
+
+%#  $("#transaction_tag").hide();
+  $("#transaction_tag").removeClass("active");
+
 });
-%= end
+</script>
 
 <div id="queue" class="navbar" >
 <ul>
-% if (ref($transactions) eq 'ARRAY') { 
-% foreach my $t (@$transactions) {
-  <li><a class="navbar info" href="#"><%= $t %></a></li>
-% }
-% }
+%# if (ref($transactions) eq 'ARRAY') { 
+%# foreach my $t (@$transactions) {
+%#  <li><a class="navbar info" href="#"><%= $t %></a></li>
+%# }
+%# }
 </ul>
 </div>

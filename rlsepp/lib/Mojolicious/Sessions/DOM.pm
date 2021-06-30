@@ -30,6 +30,7 @@ has cookie_path        => '/';
 has default_expiration => 3600;
 has deserialize        => sub { \&Mojo::JSON::j };
 has samesite           => 'Lax';
+has secure            => 'true';
 has serialize          => sub { \&Mojo::JSON::encode_json };
 
 sub load {

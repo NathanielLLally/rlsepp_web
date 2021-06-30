@@ -10,11 +10,108 @@ use Mojo::Util qw/dumper/;
 use Try::Tiny;
 use Mojo::JSON qw(decode_json encode_json);
 use Data::Dumper;
+use Hash::Merge qw/merge/;
 use Mojolicious::Sessions;
 
 # Render the template "index.html.ep"
 
 use rlsepp::Auth;
+
+sub wsSession {
+  my $s = shift;
+  $s->app->log->debug("ws://data:wsSession");
+
+  # Increase inactivity timeout for connection a bit (what was it?)
+  $s->inactivity_timeout(300);
+
+  $s->on( json => sub {
+      my ($ws, $data) = @_;
+      
+      my $json = {};
+      try {
+        my $sid = undef;
+        my $session = {};
+
+        if (exists $data->{sid}) {
+          $sid = $data->{sid};
+          delete $data->{sid};
+          $session = $s->retrieveSessionDb($sid);
+          $s->app->log->debug("session: sid [$sid]\n".dumper($session));
+        }
+       
+        #  if data passed in sans sid contains keys
+        #
+        my $count = 0;
+        foreach my $key (keys %$data) {
+          if (exists $data->{$key}  && defined $data->{$key}) {
+            $count++;
+          }
+        }
+
+        #
+        if ($count > 0) {
+#          $session = merge($session, $data);
+          foreach my $k (keys %$data) {
+            $session->{$k} = $data->{$k};
+          }
+
+          #  handshake is as follows
+          #
+          #  index has sign in buttons which will result in populating
+          #     useremail along side SSO provider specific session variables
+          #  this is the initial insert not having an sid
+          #
+          #  all subsequent calls to this function will either be a session read request
+          #  or a store request having said sid in data->sid which will then contain ssoid & roles
+          #
+          #  placed here to handle the SSO handoff ^_^
+          #
+          if (not exists $session->{ssoid}) {
+            $session->{ssoid} = $s->getUserID($session);
+          }
+          if (not exists $session->{roles}) {
+            $session->{roles} = $s->userRoles($session->{useremail});
+          }
+        }
+
+        #  or if existing session is missing ssoid generated from 
+        #  DBCommon::getUserID (rlsepp.useraccesscontrol.googlesso)
+        #  or the users roles
+        #
+
+        #  then perform a store 
+        #
+        if ($count > 0) {
+          $sid = $s->storeSessionDb($session, $sid);
+        }
+
+      $s->app->log->debug('data::wsSession->store returned sid '.$sid);
+
+      # if no retrieval was done, $session should have passed data from merge plus ssoid & roles
+      #
+      $json = $session;
+      $json->{sid} = $sid;
+
+      } catch {
+        if ($_) {
+          $s->app->log->error($_);
+        }
+      };
+
+      $ws->send({json => $json});
+
+      });
+
+  # Incoming message
+  $s->on(message => sub ($s, $msg) {
+    $s->app->log->debug("data:wsSession on message [$msg]");
+  });
+
+  # Closed
+  $s->on(finish => sub ($s, $code, $reason = undef) {
+    $s->app->log->debug("WebSocket closed with s[$s]code [$code] reason[$reason]");
+  });
+}
 
 sub view {
   my $s = shift;
@@ -23,7 +120,7 @@ sub view {
   my $ssoid = $s->session('ssoid');
   $s->app->log->debug('ssoid '.$ssoid);
 
-  $s->redirect_to('/') if (not defined $s->session('ssoid'));
+  $s->redirect_to('/') if (not defined $s->session('sid'));
 
   my $view = $s->stash('view');
   my $schema = $s->stash('schema');
@@ -33,7 +130,7 @@ sub view {
 
   $s->stash(url => $s->url_for('/data/store')->to_abs->scheme('ws'));
   #$s->stash(socket => $s->url_for('/data/store')->to_abs->scheme('ws')->port('2324'));
-  $s->stash(socket => 'ws://min_max_order_notify.grandstreet.group:2324');
+  $s->stash(socket => 'wss://min_max_order_notify.grandstreet.group:2324');
   $s->stash(mode => $s->app->mode);
 	$s->session(views => $s->schemaviews);
 
@@ -136,6 +233,7 @@ sub view {
     $l = "limit 1000";
   }
   if ($format eq 'json') {
+    $s->app->log->debug('Data::view json request');
     $s->session(order_by => $opt{'order_by'});
 
     $fields = '*' unless length $fields > 0;

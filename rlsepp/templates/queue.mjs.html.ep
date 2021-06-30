@@ -1,0 +1,4 @@
+% my $sid = session 'sid';
+%= include 'session.mjs';
+<script type="module">
+  import { default as WebSocketClient } from "/js/websocket-async.esm.js"

@@ -1,57 +1,30 @@
 % title 'Execute';
 % layout 'cli';
+%= include 'rpc.mjs';
 % my $transaction_tag = session 'transaction_tag';
-% my $socket = 'ws://min_max_order_notify.grandstreet.group:2324';
-% my $ssoid = session 'ssoid';
+% my $useremail = session 'useremail';
 
-%= javascript begin
-
-function wsCmd(transaction_tag, command) {
-      if (!("WebSocket" in window)) {
-        alert('Your browser does not support WebSockets!');
-        return;
-      }
-
-      console.log("main/selector wsExecute:2324 "+"<%= $socket %>");
-      var ws = new WebSocket("<%= $socket %>");
-      ws.onopen = function () {
-				var fieldString = $("#fieldorder").html();
-        var json = {
-          ssoid: "<%= $ssoid %>",
-					transaction_tag: transaction_tag,
-					cmd: command,
-          };
-
-        ws.send(JSON.stringify(json));
-      };
-      ws.onmessage = function (evt) {
-        console.log('wsTest');
-			console.log(evt);
-        var data = JSON.parse(evt.data);
-      };
-}
-
+<script>
 $(document).ready(function() {
-  console.log('selector onload');
-	$('body').css('background', '');
-	$('body').css('background-color', 'blue !important');
+
+window.rpcEvent.addEventListener('rpc', (e) => {
+  console.log('window RPC event listener'+e.detail);
+  $('.log').append(`<p>${JSON.stringify(e.detail,null,2)}</p>`);
+})
+
 	$('.command')
 		.off('click')
 		.on('click', function(e) {
 			e.preventDefault();
-			wsCmd($('#transaction_tag').html(), $(this).html());
+      window.wsRPC({cmd: $(this).html(), transaction_tag: $('#transaction_tag').html()});
 		});
 });
 
-%= end
-
-% content_for header => begin
-% end
-
-<h3 class="transaction_tag" ><%= $transaction_tag %></h2>
+</script>
+<h3 class="transaction_tag" ><%= $transaction_tag %></h3>
 <button id="execute" class="command button pill">execute</button>
-<button id="execute" class="command button pill">update</button>
-<div id="tty" class="oo navbar ">
+<button id="update" class="command button pill">update</button>
+<div id="tty" class="navbar ">
 <div id="cli" class="navbar">
 <input type="text" id="shell" />
 <button id="enter" class="button pill">enter</button>

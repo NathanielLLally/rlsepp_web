@@ -1,10 +1,3 @@
-var guser = {
-  id: 0,
-  name: "",
-  imageurl: "",
-  email: "",
-  isSignedIn: false,
-  };
 
 function setSession(token, val) {
   Cookies.set('_'+token, val);
@@ -36,11 +29,12 @@ function setUser(token, val) {
 //  var key = '_'+api+'user'+token;
   var key = token
 
-  var opts = { domain: '.grandstreet.group', samesite: 'Lax' };
+  var opts = { domain: '.grandstreet.group', samesite: 'Lax', secure:true };
   Cookies.set(key, val, opts);
 }
 
 function wsSession(json) {
+  return;
 
   console.table(json);
   if (!("WebSocket" in window)) {

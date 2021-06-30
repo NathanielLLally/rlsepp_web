@@ -2,13 +2,12 @@
 % end
 % my $useremail = session('useremail');
 % my $transaction_tag = session('transaction_tag');
-% my $ssoid = session('ssoid');
 % my $roles = session('roles');
 
-%= javascript begin
+<script>
 $(document).ready(function() {
   var tag = "<%= $transaction_tag %>";
-  console.log('navbar onload, tag: '+"<%= $transaction_tag %>");
+//  console.log('navbar onload, tag: '+"<%= $transaction_tag %>");
   $("#transaction_tag")
     .html(tag)
 %#    .addClass("active")
@@ -16,43 +15,40 @@ $(document).ready(function() {
     .on( 'click', function (e) {
       e.preventDefault();
       var tag = $(this).html()
-       console.log('input text? '+tag); 
       $("#global_filter").val(tag);
       $("#resultSet_filter").val(tag);
     });
+
   $("#navbar > ul > li > a")
     .off('click')
     .on('click', function(e) {
-      $(this).addClass('active')
-      .siblings().removeClass('active');
-
-	setUser('_navbar_active', this.href)
-	setUser('_jssesh', btoa(JSON.stringify(['_navbar_active'])))
-    });
-
-%#  $("a[href="+window.location+"]").addClass("active");
-%#   $(".active") .on('click', function(e) { });
+  $(this).addClass('active').parent().children().not(this).removeClass('active');
+       });
+  let sel = '#navbar > ul > li > a[href="' + location.pathname + '"]';
+  $(sel).addClass('active').parent().children().not(sel).removeClass('active');
+//  $(sel).addClass('active');
+  if ($(sel).length == 0) {
+    $('#navbar > ul > li > a[href="/"]').addClass('active');
+  }
+  //$(sel).addClass('active').parent().children().not(this).removeClass('active');
 });
-%= end
+</script>
 
 <div id="navbar" class="navbar" >
 <ul>
-  <li><a id="transaction_tag" class="navbar info active" href="#"><%= $transaction_tag %></a></li>
+  <li><a id="transaction_tag" class="navbar info" href="#"><%= $transaction_tag %></a></li>
 
 % if (grep {/trade/} @$roles) {
   <li><a class="navbar" href="/app/selector">execute</a></li>
 % }
-% if (defined $mode && $mode eq 'development') {
-  <li><a class="navbar" href="/debug">debug</a></li>
-% }
 % if (defined $useremail) {
-  <li><a class="navbar info active" href="/"><%= $useremail %></a></li>
+  <li><a class="navbar info" href="/" ><%= $useremail %></a></li>
 % } else {
   <li><a class="navbar " href="/">Log In</a></li>
 % }
 % if (grep {/query/} @$roles) {
   <li><a class="navbar" href="/data/view/public/web_event">speculative transactions</a></li>
-  <li><a class="navbar" href="/data/view/public/web_event_pending">pending transaction eve nts</a></li>
+  <li><a class="navbar" href="/data/view/public/web_event_pending">pending transaction events</a></li>
   <li><a class="navbar" href="/data/view/public/web_transaction_moves">transaction overview</a></li>
   <li><a class="navbar" href="/data/view/public/web_latest_moves_by_profit">profit opportunities</a></li>
   <li><a class="navbar" href="/data/view/public/web_transaction_profit">?</a></li>

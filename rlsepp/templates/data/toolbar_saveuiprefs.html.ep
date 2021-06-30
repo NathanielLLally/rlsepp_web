@@ -6,7 +6,7 @@
 %   @order_by = @$order_by;
 % }
 
-%= javascript begin
+<script>
 % my $i = 1;
 
 function wsTest(sortArray) {
@@ -106,4 +106,5 @@ console.log("exit save ui prefs");
           })
       .prependTo($toolbar);
 }
-%= end
+
+</script>

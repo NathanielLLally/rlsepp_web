@@ -4,8 +4,7 @@
 %= include 'data/toolbar'
 %= include 'data/toolbar_saveuiprefs'
 %= include 'data/search'
-%= javascript begin
-
+<script>
 var data;
 
 console.log('loading');
@@ -32,7 +31,7 @@ $(document).ready(function() {
     console.log('document ready');
     init();
 } );
-%= end
+</script>
 % content_for header => begin
 % title $view;
 % end

@@ -1,4 +1,4 @@
-%= javascript begin
+<script>
 % my $i = 0;
 
 function toolbar() {
@@ -44,4 +44,4 @@ function toolbar() {
 
     } );
 }
-%= end
+</script>

@@ -1,16 +1,10 @@
 <link rel="shortcut icon" href="/img/GSG_BW_favicon.png" />
-<script src="https://apis.google.com/js/platform.js" async defer></script>
-<meta name="google-signin-client_id" content="17870503823-it9a6qsdstdb8jpg8f16qpqmqg0m6cnt.apps.googleusercontent.com"/>
 %= stylesheet '/css/h5bp.css'
 %= stylesheet_nc '/css/styles.css'
 %= stylesheet_nc '/css/navbar.css'
 %= stylesheet_nc '/css/overrides.css'
-%= stylesheet 'https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.min.css'
-%= javascript '/js/autobahn.min.js'
 %= javascript '/js/jquery-3.3.1.min.js'
 %= javascript '/js/libs/underscore-min.js'
 %= javascript 'https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js'
 %= javascript '/js/libs/modernizr.js'
-%= javascript_nc '/js/googleWebAuth.js'
 %= javascript '/js/libs/jquery.leanModal.min.js'
-%= javascript 'https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.js'

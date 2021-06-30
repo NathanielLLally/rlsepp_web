@@ -1,0 +1,30 @@
+% my $sid = session 'sid';
+<script type="module">
+  import { default as awsRPC } from "/js/rpc.esm.js"
+
+let eventEmitter = new EventTarget();
+//eventEmitter.addEventListener('session', console.log);
+if (typeof window.rpcEvent === 'undefined') {
+  console.log('rpc.mjs.html new event emitter');
+  window.rpcEvent = eventEmitter;
+}
+function wsRPC(Pjson) {
+
+  let json = {
+    ...window.session,
+    ...Pjson
+  };
+
+  ( async () => {
+    eventEmitter.dispatchEvent(new CustomEvent('rpc', { detail: `executing command [${json.cmd}]` }));
+    let ws = new awsRPC();
+		await ws.connect();
+    let r = await ws.RPC(json);
+		while ( r = await ws.RPC() ) {
+		    eventEmitter.dispatchEvent(new CustomEvent('rpc', { detail: r }));
+		}
+  })();
+}
+window.wsRPC = wsRPC;
+
+</script>

@@ -8,6 +8,8 @@
 
   %= include 'common_header'
   <%= content_for 'header' %>
+%= stylesheet 'https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.min.css'
+%= javascript 'https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.js'
 
 </head>
 <body>
@@ -15,11 +17,11 @@
   %= include 'navbar'
   %= include 'queue'
 
-% if (defined session 'ssoid' ) {
+% if (defined session 'sid' ) {
   <%= content %>
 % } else {
 
 % }
-
+  <div class="log"></div>
   </body>
 </html>

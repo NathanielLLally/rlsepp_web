@@ -1,0 +1,13 @@
+% title 'Execute';
+% layout 'cli';
+% my $transaction_tag = session 'transaction_tag';
+
+<h3 class="transaction_tag" ><%= $transaction_tag %></h3>
+<button id="execute" class="command button pill">execute</button>
+<button id="update" class="command button pill">update</button>
+<div id="tty" class="navbar ">
+<div id="cli" class="navbar">
+<input type="text" id="shell" />
+<button id="enter" class="button pill">enter</button>
+</div>
+</div>

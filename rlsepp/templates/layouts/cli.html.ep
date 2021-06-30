@@ -15,11 +15,12 @@
   %= include 'navbar'
   %= include 'queue'
 
-% if (defined session 'ssoid' ) {
+% if (defined session 'sid' ) {
   <%= content %>
 % } else {
 
 % }
 
+  <div class="log"></div>
   </body>
 </html>

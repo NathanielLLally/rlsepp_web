@@ -42,7 +42,10 @@ async function onSignIn(googleUser) {
   ws.send(JSON.stringify(json));
   let data = await ws.receive();
   let jsonData = JSON.parse(data);
-  setCookie('sid', jsonData.sid);
+  setCookie('sid', null);
+  if (jsonData.sid) {
+    setCookie('sid', jsonData.sid);
+  }
 	let sid = getCookie('sid');
 	console.log('cookie sid :'+sid);
 
@@ -57,8 +60,9 @@ async function onSignIn(googleUser) {
       $('a#login_href').attr('href','/app/portal');
       $('a#login_href').html('You may enter our portal');
 
-      $('.useremail').html(getUser('email', 'g'));
-      $('.useroauth').html("<pre><p>"+getUser('name', 'g')+"<img src=\""+getUser('imageurl','g')+"\"/></pre>");
+console.log(json.guseremail);
+      $('.useremail').html(json.guseremail);
+      $('.guserimage').html("<img src=\""+json.guserimageurl+"\" height=\"50\" width=\"50\"/>");
 }
 window.googleOnSignIn = onSignIn;
 export default onSignIn;

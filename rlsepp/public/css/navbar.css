@@ -34,7 +34,9 @@ ul {
 
 
 .navbar {
+  font-family: Lucida Grande, Lucida Sans, sans-serif;
   font-size: 1em;
+  line-height: 1;
   list-style-type: none;
 margin: 0;
 padding: 0;

@@ -1,0 +1,33 @@
+% my $sid = session 'sid';
+<script type="module">
+  import { default as asyncWsSession } from "/js/session.esm.js"
+
+let eventEmitter = new EventTarget();
+//eventEmitter.addEventListener('session', console.log);
+if (typeof window.sessionEvent === 'undefined') {
+  console.log('session event added to window.sessionEvent');
+  window.sessionEvent = eventEmitter;
+}
+function wsSession() {
+	let ssid = "<%= $sid %>";
+  let sid;
+  if (ssid) {
+    sid = ssid;
+    console.log(`session.mjs sid (session) [${sid}]`);
+  } else {
+    sid = Cookies.get('sid');
+    console.log(`session.mjs sid (cookie) [${sid}]`);
+  }
+
+  let json = window.session;
+  ( async () => {
+    let session = await asyncWsSession(sid, json);
+    console.log('session.mjs.html.ep:wsSession');
+//    console.log(session);
+    window.session = session;
+    eventEmitter.dispatchEvent(new CustomEvent('session', { detail: 'sessionDB loaded @ window.session' }));
+  })();
+}
+window.wsSession = wsSession;
+
+</script>
