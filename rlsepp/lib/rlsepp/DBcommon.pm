@@ -110,6 +110,19 @@ sub retrieveSessionDb {
   }
 }
 
+sub getExchanges {
+  my $s = shift;
+  my $tag = shift;
+  croak "must pass transaction_tag, passed [$tag]" unless (defined $tag);
+  my ($dbh, $sth) = ($s->dbh, undef );
+  $sth = $dbh->prepare('select distinct(exchange) from rlsepp.public.event where transaction_tag = ?');
+  $sth->execute($tag);
+  while (my $result = $sth->fetchrow_hashref) {
+    return decode_json($result->{exchange});
+  }
+}
+
+
 sub storeSessionDb {
   my $s = shift;
   my $d = shift || {};

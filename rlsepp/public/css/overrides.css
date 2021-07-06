@@ -23,6 +23,12 @@ a:visited
 .dataTable table
 {
   overflow-x: scroll;
+  background-color: rgba(0, 0, 0, 0.4);
+    -webkit-transition: opacity .5s;
+    -moz-transition: opacity .5s;
+    -ms-transition: opacity .5s;
+    -o-transition: opacity .5s;
+    transition: opacity .5s;
 }
 
 .dataTables_filter
@@ -59,3 +65,6 @@ tr.shown td.details-control {
       background: url('/img/details_close.png') no-repeat center center;
 }
 
+.log {
+  overflow:scroll;
+}

@@ -1,32 +1,53 @@
-% title 'Execute';
 % layout 'cli';
+% content_for header => begin
+% title 'Execute';
+<link rel="stylesheet" href="/css/xterm.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.js"></script>
+%# <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/2.26.0/js/jquery.terminal.min.js"></script>
+
+%# <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/2.26.0/css/jquery.terminal.min.css" rel="stylesheet"/>
+% end
 %= include 'rpc.mjs';
 % my $transaction_tag = session 'transaction_tag';
 % my $useremail = session 'useremail';
 
+<script src="/js/term.js"></script>
 <script>
 $(document).ready(function() {
 
+let PS1 = `\x1b[1;34mrpc\x1b[1;32m->\x1b[1;36mexecute\x1b[1;32m->\x1b[1;33mskyhawk\x1b[1;37m $ `;
+let PS2 = `\x1b[1;34mrpc\x1b[1;32m<-\x1b[1;36mreceive\x1b[1;32m<-\x1b[1;33mskyhawk\x1b[1;37m $ `;
 window.rpcEvent.addEventListener('rpc', (e) => {
-  console.log('window RPC event listener'+e.detail);
-  $('.log').append(`<p>${JSON.stringify(e.detail,null,2)}</p>`);
+  console.log('window RPC event listener')
+  console.log(e.detail);
+	if (e.detail.response) {
+		e.detail.response.split("\n").map( (line) => {
+			term.write("\r\n"+line);
+	});
+	}
+	if (e.detail.done) {
+		term.write("\r\n" + PS1);
+		}
+	curr_line = ""
+//  $('.log').append(`${JSON.stringify(e.detail,null,2)}<br/>`);
 })
 
 	$('.command')
 		.off('click')
 		.on('click', function(e) {
 			e.preventDefault();
+			term.write("\r\n"+$(this).html() +' '+$('#transaction_tag').html());
       window.wsRPC({cmd: $(this).html(), transaction_tag: $('#transaction_tag').html()});
 		});
 });
 
 </script>
+<div>
 <h3 class="transaction_tag" ><%= $transaction_tag %></h3>
 <button id="execute" class="command button pill">execute</button>
 <button id="update" class="command button pill">update</button>
-<div id="tty" class="navbar ">
-<div id="cli" class="navbar">
-<input type="text" id="shell" />
-<button id="enter" class="button pill">enter</button>
-</div>
+<button class="command button pill">init</button>
+<button class="command button pill">balance</button>
+<button class="command button pill">invalid</button>
+<div id="terminal"></div>
 </div>

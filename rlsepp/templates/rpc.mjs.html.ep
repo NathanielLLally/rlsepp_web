@@ -20,9 +20,19 @@ function wsRPC(Pjson) {
     let ws = new awsRPC();
 		await ws.connect();
     let r = await ws.RPC(json);
-		while ( r = await ws.RPC() ) {
-		    eventEmitter.dispatchEvent(new CustomEvent('rpc', { detail: r }));
-		}
+    try {
+			let done = false;
+  		while ( !done ) {
+					r = await ws.RPC()
+if (r.done) {
+done = true;
+}
+  		    eventEmitter.dispatchEvent(new CustomEvent('rpc', { detail: r }));
+  		}
+    } catch(e) {
+      //socket close, EOF or timeout
+      eventEmitter.dispatchEvent(new CustomEvent('rpc', { detail: e }));
+    }
   })();
 }
 window.wsRPC = wsRPC;

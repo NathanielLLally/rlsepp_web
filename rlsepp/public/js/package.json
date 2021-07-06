@@ -1,0 +1,17 @@
+{
+  "name": "dummy",
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "babel-runtime": "^6.26.0",
+    "jquery.terminal": "^2.26.0",
+    "terminal-js-emulator": "^3.0.1",
+    "ws-promise": "file:ws-promise",
+    "xterm": "^4.13.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.2.2",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1"
+  }
+}
