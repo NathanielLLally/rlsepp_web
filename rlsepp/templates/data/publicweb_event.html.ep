@@ -1,1 +1,165 @@
-ajax.html.ep
+% title 'Grand St Group';
+% layout 'portal';
+%= include 'data/columns'
+%= include 'data/toolbar'
+%= include 'data/toolbar_saveuiprefs'
+%= include 'data/search'
+<script>
+function setCookie(token, val) {
+//  var key = '_'+api+'user'+token;
+  var key = token
+
+  var opts = { domain: '.grandstreet.group', samesite: 'Lax' };
+  Cookies.set(key, val, opts);
+}
+var data;
+
+console.log('loading');
+
+function init() {
+  var table = $('#resultSet').DataTable( {
+      "dom": '<"toolbar">Bfrtip',
+      bProcessing: true,
+      bServerSide: true,
+      sAjaxSource: "/data/view/<%= $schema %>/<%= $view %>.json",
+      pageLength: 25,
+      columns: columns(),
+      rowGroup: {
+        dataSrc: 'transaction_tag'
+      },
+	colReorder: true,
+    buttons: [
+        'colvis',
+				'copy',
+        'excel',
+    ],
+//			stateSave: true,
+      "bFilter": true,
+    } );
+
+table.columns().flatten().each( function ( colIdx ) {
+    // Create the select list and search operation
+    var select = $('<select />')
+        .appendTo(
+            table.column(colIdx).footer()
+        )
+        .on( 'change', function () {
+            table
+                .column( colIdx )
+                .search( $(this).val() )
+                .draw();
+        } );
+ 
+    // Get the search data for the first column and add to the select list
+    table
+        .column( colIdx )
+        .cache( 'search' )
+        .sort()
+        .unique()
+        .each( function ( d ) {
+            select.append( $('<option value="'+d+'">'+d+'</option>') );
+        } );
+} );
+
+    toolbar();
+    toolbar_saveuiprefs();
+  	initHook();
+    search_initHook();
+
+  //highlight
+  $('#resultSet tbody')
+        .on( 'mouseenter', 'td', function () {
+
+            var colIdx = table.cell(this).index();
+						if (colIdx) {
+colIdx = colIdx.column
+}
+ 
+            $( table.cells().nodes() ).removeClass( 'highlight' );
+            $( table.column( colIdx ).nodes() ).addClass( 'highlight' );
+        } );
+
+//select transaction
+  $('#resultSet tbody').on( 'click', 'tr', function () {
+      if ( $(this).hasClass('selected') ) {
+      $(this).removeClass('selected');
+      $('#btnqueue').attr('disabled','disabled');
+      }
+      else {
+      table.$('tr.selected').removeClass('selected')
+      $(this).addClass('selected');
+      $('#btnqueue').removeAttr('disabled');
+      }
+      } );
+
+  var $anchor = $("#toggleColumns");
+
+// button to push queue 
+//  transaction_tag el from
+//  selected datatable line item
+//
+$(document.createElement("button"))
+    .attr('id', 'btnqueue')
+    .attr('class', 'button primary')
+    .attr('disabled', 'disabled')
+    .html('queue transaction')
+    .off('click')
+    .on('click', function (e) {
+        e.preventDefault();
+        $(this).attr('disabled','disabled');
+
+        var row = table.row('.selected')
+        table.$('tr.selected').removeClass('selected');
+        if(typeof row !== 'undefined') {
+          var tag = row.data().transaction_tag
+
+          setCookie('_transaction_tag', tag)
+
+					queue_addTransaction(tag);
+
+          $("#transaction_tag")
+          .html(tag)
+          .addClass("active")
+          .off('click')
+          .on( 'click', function (e) {
+              e.preventDefault();
+              var tag = $(this).html()
+              $("#global_filter").val(tag);
+              $("#resultSet_filter").val(tag);
+              });
+
+          var btn = $(document.createElement("button"))
+            .attr('id', 'queue')
+            .attr('class', 'button pill')
+            .off('click')
+            .on('click', function(e) {
+               e.preventDefault();
+               $("#transaction_tag")
+               .html('')
+               .removeClass("active");
+
+               setCookie('_transaction_tag', null)
+               $(this).remove();
+            })
+        .html(tag);
+        } else {
+          $("#transaction_tag")
+            .html('')
+            .removeClass("active");
+
+          setCookie('_transaction_tag', null)
+        }
+    } )
+  .prependTo($anchor);
+}
+
+$(document).ready(function() {
+    console.log('document ready');
+    init();
+} );
+</script>
+% content_for header => begin
+% title $view;
+% end
+
+%= include 'data/table_search'

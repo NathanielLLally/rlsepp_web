@@ -1,9 +1,30 @@
 <script>
 
 function filterGlobal () {
-	console.log($('#global_filter').val());
+	console.log('filterGlobal()');
+let s = $(".filter").map( function() {
+	let s = $(this).val() || ""
+	if (s.length) {
+		if (s.search(/!/) > -1) {
+		s = s.replace('!', "not like \'%")
+		s +="%\'"
+		
+	} else {
+		s = `like \'%${s}%\'`;
+	}
+	}
+	let f = this.id
+	f = f.replace('_filter','::varchar');
+	if (s.length) {
+		return f+' '+s
+	}
+})
+	.get()
+	.join(' and ');
+console.log(s)
+        console.log($('#transaction_tag_filter').val())
 var dt = $('#resultSet').DataTable().search(
-        $('#global_filter').val(),
+			s,
         $('#global_regex').prop('checked'),
         $('#global_smart').prop('checked')
     )
@@ -11,16 +32,18 @@ dt.draw();
 }
  
 function filterColumn ( i ) {
+/*
     $('#resultSet').DataTable().column( i ).search(
         $('#col'+i+'_filter').val(),
         $('#col'+i+'_regex').prop('checked'),
         $('#col'+i+'_smart').prop('checked')
     ).draw();
+*/
 }
 
 function searchHtml() {
-            return '<tr id="filter_global"> <td>Transaction search</td> <td align="center"><input type="text" class="global_filter" id="global_filter"></td> <td align="center"><input type="checkbox" class="global_filter" id="global_regex"></td> <td align="center"><input type="checkbox" class="global_filter" id="global_smart" checked="checked"></td> </tr>'
-	+' <td>Column - </td> <td align="center"><input type="text" class="column_filter" id="col0_filter"></td> <td align="center"><input type="checkbox" class="column_filter" id="col0_regex"></td> <td align="center"><input type="checkbox" class="column_filter" id="col0_smart" checked="checked"></td> </tr>';
+//            return '<tr id="filter_global"> <td>Transaction search</td> <td align="center"><input type="text" class="global_filter" id="global_filter"></td> <td align="center"><input type="checkbox" class="global_filter" id="global_regex" checked="checked"></td> <td align="center"><input type="checkbox" class="global_filter" id="global_smart"></td> </tr>';
+	//+' <td>Column - </td> <td align="center"><input type="text" class="column_filter" id="col0_filter"></td> <td align="center"><input type="checkbox" class="column_filter" id="col0_regex"></td> <td align="center"><input type="checkbox" class="column_filter" id="col0_smart" checked="checked"></td> </tr>';
 }
  
 function search_initHook() {
@@ -29,10 +52,11 @@ function search_initHook() {
 
 		$searchDiv.prepend(searchHtml());
 
+/*
     $(document.createElement("label"))
       .html('*shift-click to sort on multiple columns')
       .prependTo($searchDiv);
-
+*/
 	
     $(document.createElement("button"))
       .attr("id", "filter_btn")
@@ -48,12 +72,22 @@ function search_initHook() {
 
     $('input.search').off('click');
 
-    $('input.global_filter').on( 'keyup click', function () {
-    } );
+    $('#global_filter').on( 'keyup click',
+       function (e) { 
+          e.preventDefault();
+      } 
+    );
  
     $('input.column_filter').on( 'keyup click', function () {
 //        filterColumn( $(this).parents('tr').attr('data-column') );
     } );
+    $('#resultSet_filter').off( 'keyup click keydown keypress keypress.jstree' )
+      .on( 'keyup click keydown keypress',
+        function(e) {
+      e.preventDefault();
+console.log('wtf');
+      });
+$('*').unbind('keyup keydown keypress')
 }
 
 $(document).ready(function() {

@@ -1,9 +1,11 @@
 {
   "name": "dummy",
   "dependencies": {
+    "ansi-colors-es6": "^5.0.0",
     "babel-polyfill": "^6.26.0",
     "babel-runtime": "^6.26.0",
     "jquery.terminal": "^2.26.0",
+    "js-cookie": "^2.2.1",
     "terminal-js-emulator": "^3.0.1",
     "ws-promise": "file:ws-promise",
     "xterm": "^4.13.0"

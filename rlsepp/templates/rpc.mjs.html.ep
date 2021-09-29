@@ -1,4 +1,6 @@
 % my $sid = session 'sid';
+<script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.1.10/es5-shim.min.js"></script>
+<script src="https://rawgit.com/kawanet/msgpack-lite/master/dist/msgpack.min.js"></script>
 <script type="module">
   import { default as awsRPC } from "/js/rpc.esm.js"
 
@@ -14,26 +16,29 @@ function wsRPC(Pjson) {
     ...window.session,
     ...Pjson
   };
+(async () => {
+    eventEmitter.dispatchEvent(new CustomEvent('rpc', { detail: `executing command [${json.cmd}]` }));          
+    let ws = new awsRPC({url:"wss://skyhawk.grandstreet.group:2324"});                                          
+    await ws.connect();
+        ws.client.on("message", (cmd, message, ...args) => {
+          console.log(`client on.message ${cmd}, ${message}, ${args}`);
+      eventEmitter.dispatchEvent(new CustomEvent('rpc', { detail: message }));                                  
+        })
 
-  ( async () => {
-    eventEmitter.dispatchEvent(new CustomEvent('rpc', { detail: `executing command [${json.cmd}]` }));
-    let ws = new awsRPC();
-		await ws.connect();
-    let r = await ws.RPC(json);
+        ws.client.on(Pjson.cmd, (message, ...args) => {
+          console.log(`client on.cmd ${Pjson.cmd}, ${message}, ${args}`);
+      eventEmitter.dispatchEvent(new CustomEvent('rpc', { detail: message }));
+        })
     try {
-			let done = false;
-  		while ( !done ) {
-					r = await ws.RPC()
-if (r.done) {
-done = true;
-}
-  		    eventEmitter.dispatchEvent(new CustomEvent('rpc', { detail: r }));
-  		}
+      let r = await ws.RPC(json);
+      eventEmitter.dispatchEvent(new CustomEvent('rpc', { detail: r }));
+      return r;
     } catch(e) {
       //socket close, EOF or timeout
       eventEmitter.dispatchEvent(new CustomEvent('rpc', { detail: e }));
     }
-  })();
+})();
+
 }
 window.wsRPC = wsRPC;
 

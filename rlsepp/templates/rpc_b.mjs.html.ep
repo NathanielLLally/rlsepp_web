@@ -1,0 +1,127 @@
+% my $sid = session 'sid';
+<script src="https://rawgit.com/kawanet/msgpack-lite/master/dist/msgpack.min.js"></script>
+<script type="module">
+import ansi from "/js/ansi-colors-es6/index.js";
+import Client from "/js/ws-promise/Client.mjs";
+import EventEmitter from "/js/ws-promise/EventEmitter.js";
+export default class awsRPC {
+  constructor(opts) {
+    this.client = new Client(opts.url);
+
+	}
+	async connect() {
+    this.client = await this.client.open();
+		console.log('rpc.esm.js wss://connected');
+	}
+  async clear() {
+    this.client.clear();
+  }
+	async RPC(Pjson, ...args) {
+    let r = null;
+    if (Pjson.cmd) {
+      try {
+        r = await this.client[Pjson.cmd](Pjson, ...args);
+        return r;
+      } catch(e) {
+        console.log(Pjson);
+        console.log(e);
+      }
+		}
+		return r;
+	}
+}
+
+let eventEmitter = undefined;
+if (typeof window.rpcEvent === 'undefined') {
+  eventEmitter = new EventEmitter();
+  console.log('rpc_b.mjs.html new event emitter');
+  window.rpcEvent = eventEmitter;
+} else {
+  eventEmitter = window.rpcEvent;
+}
+
+function wsRPC(Pjson, ...args) {
+
+  let json = {
+    ...window.session,
+    ...Pjson
+  };
+
+(async () => {
+
+    eventEmitter.emit('rpc', { detail: {response: `executing command [${json.cmd}]` }});
+			let re = /connection|close|open/;
+			let arr;
+			if ((arr = re.exec(Pjson.cmd)) !== null) {
+          eventEmitter.emit('rpc', { detail: {response: ansi.bold.red('Invalid Command'), done:true} });
+				return;
+			}
+
+    
+    let ws = undefined;
+    if (typeof window.awsRPC === 'undefined') {
+      ws = new awsRPC({url:"wss://skyhawk.grandstreet.group:2324"});
+      window.awsRPC = ws
+        ws.client.on("message", (cmd, message, ...args) => {
+          console.log(`client on.message ${cmd}, ${args}`);
+          console.log(message);
+          message.reply('pong');
+        })
+        ws.client.on("open", (message, ...args) => {
+          console.log(`websocket connection to [${ws.client.url}] open`);
+      eventEmitter.emit('rpc', { detail: {
+          response: ansi.bold.green(`websocket connection to [${ansi.italic.cyan(ws.client.url)}] open`),
+          done: true
+         } });
+
+        ws.client.once("close", (message, ...args) => {
+          console.log(`client on.close ${args}`);
+      eventEmitter.emit('rpc', { detail: {
+          response: ansi.bold.red(`websocket connection to [${ansi.italic.cyan(ws.client.url)}] closed`),
+          done: true
+         } });
+        })
+
+        });
+
+        ws.client.on("info", (message, ...args) => {
+          console.log(`client on.info ${args}`);
+          eventEmitter.emit('rpc', { detail: {response: args.join(' ')} });
+          message.reply('pong');
+        })
+        ws.client.on("error", (message, ...args) => {
+          if (args.join('').length > 0) {
+            eventEmitter.emit('rpc', { detail: {response: ansi.bold.red(args.join(' ')), done:true} });
+          }
+          })
+
+        try {
+          await ws.connect();
+        } catch(e) {
+          console.log(e);
+          eventEmitter.emit('rpc', { detail: {
+            response: ansi.bold.red(`websocket connection to [${ansi.italic.cyan(e.target.url)}] failed`),
+              done: true
+          } });
+
+        return;
+    }
+    } else {
+      ws = window.awsRPC
+    }
+
+    try {
+      console.log(`calling ${json.cmd}`);
+      let r = await ws.RPC(json, ...args);
+      eventEmitter.emit('rpc', { detail: {done: true, response: r} });
+      eventEmitter.emit(json.cmd, r);
+      return r;
+    } catch(e) {
+      console.log(e);
+      //socket close, EOF or timeout
+      eventEmitter.emit('rpc', { detail: {done:true,response: JSON.stringify(e) }});
+    }
+})();
+}
+window.wsRPC = wsRPC;
+</script>

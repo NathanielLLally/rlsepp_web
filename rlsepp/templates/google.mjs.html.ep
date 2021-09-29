@@ -1,5 +1,6 @@
 <script type="module">
   import { default as WebSocketClient } from "/js/websocket-async.esm.js"
+let Cookies = window.Cookies;
 function getUser(token, api) {
   var key = '_'+api+'user'+token;
   var val =  Cookies.get(key);

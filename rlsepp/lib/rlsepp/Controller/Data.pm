@@ -128,7 +128,7 @@ sub view {
   $s->stash(ssoid => $ssoid);
   $s->app->log->debug("Data::View schema [$schema] view [$view] format [$format] ssoid [$ssoid]");
 
-  $s->stash(url => $s->url_for('/data/store')->to_abs->scheme('ws'));
+  $s->stash(url => $s->url_for('/data/store')->to_abs->scheme('wss'));
   #$s->stash(socket => $s->url_for('/data/store')->to_abs->scheme('ws')->port('2324'));
   $s->stash(socket => 'wss://min_max_order_notify.grandstreet.group:2324');
   $s->stash(mode => $s->app->mode);
@@ -158,7 +158,16 @@ sub view {
     $s->stash(search => $opt{search});
   }
 
+  if (exists $prefs->{sortorder}) {
+  $s->app->log->debug( "prefs sortorder" );
+    my @o = split(/,/, $prefs->{sortorder});
+    $opt{order_by} = \@o;
+  }
+  $s->app->log->debug('user prefs from dB :'.dumper(\$prefs));
+
+
   if (defined $s->param('iSortingCols')) {
+  $s->app->log->debug( "iSortingCols" );
     my $n = $s->param('iSortingCols');
     my @orderBy;
     my @fields =  @{ $s->session('fields') };
@@ -181,16 +190,16 @@ sub view {
   my $prefs = $s->getPrefs($schema,$view,$ssoid);
   my $fields = '*';
   @headers = @{$s->schemaviewForColumns("$schema.$view")};
+  my %visible = ();
   if (exists $prefs->{fields}) {
-    $fields = $prefs->{fields};
-    @headers = split(/,/,$fields);
+#    $fields = $prefs->{fields};
+#    @headers = split(/, /,$prefs->{fields});
+    my @h = split(/, /,$prefs->{fields});
+    foreach my $f (@h) {
+     $visible{$f} = 1;
+    }
   }
-  if (exists $prefs->{sortorder}) {
-    my @o = split(/,/, $prefs->{sortorder});
-    $opt{order_by} = \@o;
-
-  }
-  $s->app->log->debug('user prefs from dB :'.dumper(\$prefs).' ob: '.dumper($opt{order_by}));
+  $s->stash(visible => \%visible);
 
 
   $s->session(headers => \@headers);
@@ -207,8 +216,10 @@ sub view {
   }
 
   my $where = '';
+	
+	#TODO: guard from SQL injection
   if (exists $opt{search}) {
-    $where = ' where transaction_tag like \'%'.$opt{search}.'%\'';
+    $where = ' where '.$opt{search};
   }
 
   my $sql = "select count(*) as count from $schema.$view $where;";
@@ -224,8 +235,10 @@ sub view {
   #
   my $o = '';
   my $l = '';
+    $s->app->log->debug('session fields ['.join(',',@fields).']');
   if (exists $opt{'order_by'}) {
     $o = "order by ". join(", ", @{$opt{'order_by'}});
+    $s->app->log->debug("order by opt $o");
   }
   if (exists $opt{'page'} or exists $opt{'rows'}) {
     $l = "limit $limit offset $offset";
@@ -237,8 +250,10 @@ sub view {
     $s->session(order_by => $opt{'order_by'});
 
     $fields = '*' unless length $fields > 0;
+    my @g = grep { !/transaction_tag/} @headers;
+    my $group = 'group by transaction_tag,'.join(', ',@g);
     my @sql = ("select $fields from $schema.$view",
-        $where, $o, $l, ";"
+        $where, $group, $o, $l, ";"
         );
     $sql = join(' ', @sql);
   $s->app->log->debug( $sql );

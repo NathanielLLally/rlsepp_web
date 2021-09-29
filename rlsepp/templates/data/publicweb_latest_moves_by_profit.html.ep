@@ -1,8 +1,10 @@
 % title 'Grand St Group';
 % layout 'portal';
-%= include 'data/toolbar_saveuiprefs'
+%= include 'data/columns'
 %= include 'data/toolbar1'
+%= include 'data/toolbar_saveuiprefs'
 %= include 'data/lineitemdetails'
+%= include 'data/search'
 <script>
 function setCookie(token, val) {
 //  var key = '_'+api+'user'+token;
@@ -34,6 +36,15 @@ function init() {
   toolbar();
   toolbar_saveuiprefs();
   initHook();
+  search_initHook();
+
+  $('#resultSet tbody')
+        .on( 'mouseenter', 'td', function () {
+            var colIdx = table.cell(this).index().column;
+ 
+            $( table.cells().nodes() ).removeClass( 'highlight' );
+            $( table.column( colIdx ).nodes() ).addClass( 'highlight' );
+        } );
 
   $('#resultSet tbody').on( 'click', 'tr', function () {
       if ( $(this).hasClass('selected') ) {

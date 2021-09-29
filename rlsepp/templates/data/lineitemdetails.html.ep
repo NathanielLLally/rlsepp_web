@@ -1,4 +1,4 @@
-%= javascript begin
+<script>
 
 function format ( d ) {
     // `d` is the original data object for the row
@@ -51,4 +51,4 @@ function columns() {
   return columns;
 }
 
-%= end
+</script>

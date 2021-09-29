@@ -9,6 +9,7 @@ function toolbar() {
       .attr({id:"toggleColumns", class:"display"})
       .appendTo($toolbar);
 
+% my @sorted = sort { $a cmp $b } @$headers;
 % foreach my $header (@$headers) {
     $(document.createElement("a"))
       .attr("class", "toggle-vis button pill")

@@ -1,4 +1,10 @@
-let Cookies = window.Cookies;
+var guser = {
+  id: 0,
+  name: "",
+  imageurl: "",
+  email: "",
+  isSignedIn: false,
+  };
 
 function setSession(token, val) {
   Cookies.set('_'+token, val);
@@ -30,12 +36,11 @@ function setUser(token, val) {
 //  var key = '_'+api+'user'+token;
   var key = token
 
-  var opts = { domain: '.grandstreet.group', samesite: 'Lax', secure:true };
+  var opts = { domain: '.grandstreet.group', samesite: 'Lax' };
   Cookies.set(key, val, opts);
 }
 
 function wsSession(json) {
-  return;
 
   console.table(json);
   if (!("WebSocket" in window)) {
@@ -55,9 +60,38 @@ function wsSession(json) {
     setCookie('sid', data.sid);
   };
 }
+/**
+ * An asynchronous WebSocket client.
+ * @example
+ * // Set up connection.
+ * const webSocketClient = new WebSocketClient;
+ * // Connect.
+ * await webSocketClient.connect('ws://www.example.com/');
+ * // Send is synchronous.
+ * webSocketClient.send('Hello!');
+ * // Receive is asynchronous.
+ * console.log(await webSocketClient.receive());
+ * // See if there are any more messages received.
+ * if (webSocketClient.dataAvailable !== 0) {
+ *     console.log(await webSocketClient.receive());
+ * } 
+ * // Close the connection.
+ * await webSocketClient.disconnect();
+ */
+
+async function wsSession_async(json) {
+  const webSocketClient = new WebSocketClient;
+  await webSocketClient.connect('ws://portal.grandstreet.group/session');
+  webSocketClient.send(JSON.stringify(json));
+  console.log(await webSocketClient.receive());
+  if (webSocketClient.dataAvailable !== 0) {
+    console.log(await webSocketClient.receive());
+	}
+  await webSocketClient.disconnect();
+}
 
 //see console within browser for execution
-function onSignIn(googleUser) {
+async function onSignIn(googleUser) {
   var idToken;
   var profile;
       profile = googleUser.getBasicProfile();
@@ -66,13 +100,6 @@ function onSignIn(googleUser) {
 	let sid = getCookie('sid');
 	console.log('cookie sid :'+sid);
 
-  setUser('_guserid', profile.getId())
-  setUser('_gusername', profile.getName())
-  setUser('_guserimageurl', profile.getImageUrl())
-  setUser('_guseremail', profile.getEmail())
-  setUser('_useremail', profile.getEmail())
-
-  setUser('_jssesh', btoa(JSON.stringify(['_useremail', '_guserid', '_guseremail', '_gusername', '_guserimageurl'])))
 
 	let json = {
 		guserid: profile.getId(),
@@ -81,7 +108,7 @@ function onSignIn(googleUser) {
 	  guseremail: profile.getEmail(),
 	  useremail: profile.getEmail(),
 	};
-	wsSession(json);
+	await wsSession_async(json);
 
 /*
       console.log('ID: ' + profile.getId());
@@ -93,13 +120,13 @@ function onSignIn(googleUser) {
       */
 
 //      $('a#portal_href').attr('href','/app/portal');
-      $('a#login_href').attr('href','/app/portal');
-      $('a#login_href').html('You may enter our portal');
-
+//      $('a#login_href').attr('href','/app/portal');
+//      $('a#login_href').html('You may enter our portal');
+//
       console.log(document.cookie)
 
-      $('.useremail').html(getUser('email', 'g'));
-      $('.useroauth').html("<pre><p>"+getUser('name', 'g')+"<img src=\""+getUser('imageurl','g')+"\"/></pre>");
+//      $('.useremail').html(getUser('email', 'g'));
+//      $('.useroauth').html("<pre><p>"+getUser('name', 'g')+"<img src=\""+getUser('imageurl','g')+"\"/></pre>");
 }
 
 function onSignOut(){
@@ -109,17 +136,3 @@ function onSignOut(){
       guser.isSignedIn =false;
 }
 
-  // Wait until the DOM has loaded before querying the document
-    //document.cookie = "testCookie=cookieval; domain=." + 
-  $(document).ready(function() {
-    location.hostname.split('.').reverse()[1] + "." + 
-    location.hostname.split('.').reverse()[0] + "; path=/"
-
-    
-//    $('#login_uid').html("<pre><p> Hello "+getUser('name', 'g')+"<img src=\""+getUser('imageurl','g')+"\"/></pre>");
-      $('a#test_href').html('bam');
-     // (function(e) { 
-     //   console.log(gapi); 
-      //  }); 
-
-      });

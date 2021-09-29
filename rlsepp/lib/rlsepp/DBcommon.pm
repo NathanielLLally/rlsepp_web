@@ -171,6 +171,7 @@ sub saveUIPrefs {
     push @ff, @h[@{$f}[0]] . " " . @{$f}[1];
   };
   my $foo = join(',',@ff);
+#$s->app->log->debug("order being saved: $foo");
   $sth->execute($d->{ssoid},$d->{schema},$d->{view},$fields,$foo);
 }
 
