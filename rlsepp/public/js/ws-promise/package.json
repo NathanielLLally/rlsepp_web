@@ -1,0 +1,104 @@
+{
+	"author": "kdex <kdex@kdex.de>",
+	"bugs": {
+		"url": "https://github.com/kdex/ws-promise/issues"
+	},
+	"dependencies": {
+		"babel-loader": "^8.2.2",
+		"babel-polyfill": "^6.26.0",
+		"babel-preset-es2015": "^6.24.1",
+		"crystal-event-emitter": "^2.1.5",
+		"globalthis": "^1.0.0",
+		"messagepack": "^1.1.12",
+		"msgpack-lite": "^0.1.26",
+		"proxify": "^0.0.3",
+		"run-p": "0.0.0",
+		"sourceify": "^1.0.0",
+		"uuid": "^3.3.3",
+		"webpack": "^5.43.0",
+		"ws": "^7.2.0"
+	},
+	"description": "A tiny, Promise-based WebSocket protocol allowing request-response usage in ECMAScript",
+	"devDependencies": {
+		"@babel/cli": "^7.6.4",
+		"@babel/core": "^7.14.6",
+		"@babel/plugin-proposal-class-properties": "^7.5.5",
+		"@babel/plugin-proposal-export-default-from": "^7.5.2",
+		"@babel/preset-env": "^7.14.7",
+		"@babel/register": "^7.6.2",
+		"@rollup/plugin-babel": "^5.3.0",
+		"@rollup/plugin-commonjs": "^19.0.0",
+		"@rollup/plugin-node-resolve": "^13.0.0",
+		"are-you-es5": "^2.1.1",
+		"babel-eslint": "^10.0.3",
+		"babel-jest": "^24.9.0",
+		"babel-plugin-module-resolver": "^3.2.0",
+		"codecov": "^3.6.1",
+		"core-js": "^3.3.4",
+		"eslint": "^6.6.0",
+		"eslint-plugin-filenames": "^1.3.2",
+		"esm": "^3.2.25",
+		"expect": "^24.9.0",
+		"get-port": "^5.0.0",
+		"greenkeeper-lockfile": "^1.15.1",
+		"jest": "^24.9.0",
+		"npm-run-all": "^4.1.5",
+		"rollup-plugin-node-polyfills": "^0.2.1",
+		"webpack-cli": "^4.7.2"
+	},
+	"directories": {
+		"example": "examples",
+		"test": "test"
+	},
+	"files": [
+		"*.js",
+		"*.mjs",
+		"!.babelrc.js"
+	],
+	"homepage": "https://github.com/kdex/ws-promise#readme",
+	"jest": {
+		"collectCoverage": true,
+		"moduleFileExtensions": [
+			"js",
+			"mjs"
+		],
+		"testMatch": [
+			"**/*.test.mjs"
+		],
+		"transform": {
+			"^.+\\.mjs$": [
+				"babel-jest"
+			]
+		}
+	},
+	"keywords": [
+		"client",
+		"esnext",
+		"websocket",
+		"ws",
+		"promise",
+		"protocol",
+		"server",
+		"subprotocol"
+	],
+	"license": "GPL-3.0",
+	"main": "./index.js",
+	"module": "./index.mjs",
+	"name": "ws-promise",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/kdex/ws-promise.git"
+	},
+	"scripts": {
+		"build": "run-p build:*",
+		"build:cjs": "babel src -d .",
+		"build:esm": "BABEL_ENV=esm babel src -d . --keep-file-extension",
+		"check-commit": "npm test && npm run lint",
+		"clean": "for FILE in src/*.mjs; do NAME=\"$(basename \"$FILE\" | cut -d. -f 1)\"; rm -f \"$NAME.mjs\"; rm -f \"$NAME.js\"; done && rm -rf coverage dist",
+		"lint": "eslint src --ext mjs",
+		"test": "jest",
+		"prepublishOnly": "npm run check-commit && npm run build"
+	},
+	"version": "2.0.4",
+	"postinstall": "sh -c \"yarn --silent are-you-es5 check -r . | tail -n 1 > ./non_ES5_node_modules \""
+}

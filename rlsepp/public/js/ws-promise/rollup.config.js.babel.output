@@ -1,0 +1,14 @@
+import { getBabelOutputPlugin } from '@rollup/plugin-babel';
+
+export default {
+  input: 'src/index.mjs',
+    plugins: [
+        getBabelOutputPlugin({
+                presets: ['@babel/preset-env']
+                    })
+          ],
+    output: [
+        { file: 'bundle.cjs.js', format: 'cjs' },
+            { file: 'bundle.esm.js', format: 'esm' }
+              ]
+};
