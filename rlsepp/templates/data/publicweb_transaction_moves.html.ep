@@ -63,6 +63,29 @@ table.columns().flatten().each( function ( colIdx ) {
   	initHook();
     search_initHook();
 
+  //if no col-reorder, this is needed for sortorder sql
+      let t = []
+      let f = []
+      table.columns().every( function () {
+        var h = this.header();
+        var name = $(h).html();
+        name = name.replaceAll(' ','');
+        console.log(name);
+        t.push(this.index());
+        f.push(name);
+        if (/[a-zA-Z0-9]+/.test(name)) {
+          console.log('yeeey');
+        } else {
+        }
+      });
+//      console.log(t);
+      let s = window.session;
+      window.session = {
+        ...s,
+        ...{colOrder:t, fields:f}
+      };
+      console.log(window.session);
+
   //highlight
   $('#resultSet tbody')
         .on( 'mouseenter', 'td', function () {

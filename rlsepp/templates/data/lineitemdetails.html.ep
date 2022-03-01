@@ -15,6 +15,7 @@ function format ( d ) {
 }
 function initHook() {
   var table = $('#resultSet').DataTable();
+  console.log('initHook lineitem');
   // Add event listener for opening and closing details
     $('#resultSet tbody').on('click', 'td.details-control', function () {
         var tr = $(this).closest('tr');

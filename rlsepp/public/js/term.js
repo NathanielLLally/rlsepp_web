@@ -164,10 +164,8 @@ term.onKey((e) => {
 
 //added sometime between 4.5.0 and 4.12
 // paste value
-/*
 term.onPaste((data) => {
   console.log(data);
 		curr_line += data;
 		term.write(data);
 		});
-*/

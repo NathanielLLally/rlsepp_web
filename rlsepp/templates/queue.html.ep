@@ -61,6 +61,15 @@ function queue_addTransaction(tag) {
   queue_addTransaction_helper(tag);
   session_addTransactions();
 }
+function session_clrTransactions() {
+  let s = window.session;
+  window.session = {
+    ...s,
+    ...{transactions: []}
+  };
+  window.wsSession();
+}
+
 function session_addTransactions() {
   let a = []
 

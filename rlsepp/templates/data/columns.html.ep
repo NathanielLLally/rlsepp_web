@@ -2,6 +2,9 @@
 
 function initHook() {
   var table = $('#resultSet').DataTable();
+
+  console.log('initHook columns');
+
 }
 
 function columns() {

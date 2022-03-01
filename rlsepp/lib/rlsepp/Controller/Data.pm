@@ -36,7 +36,6 @@ sub wsSession {
           $sid = $data->{sid};
           delete $data->{sid};
           $session = $s->retrieveSessionDb($sid);
-          $s->app->log->debug("session: sid [$sid]\n".dumper($session));
         }
        
         #  if data passed in sans sid contains keys
@@ -82,6 +81,7 @@ sub wsSession {
         #  then perform a store 
         #
         if ($count > 0) {
+          $s->app->log->debug("session: sid [$sid] is:\n".dumper($session));
           $sid = $s->storeSessionDb($session, $sid);
         }
 
@@ -121,6 +121,8 @@ sub view {
   $s->app->log->debug('ssoid '.$ssoid);
 
   $s->redirect_to('/') if (not defined $s->session('sid'));
+  my $sid = $s->session('sid');
+  my $dbSession = $s->retrieveSessionDb($sid);
 
   my $view = $s->stash('view');
   my $schema = $s->stash('schema');
@@ -136,6 +138,7 @@ sub view {
 
   #authenticated user is logged in
   $s->stash(roles => $s->session('roles'));
+
 
 #  my @names = $s->param;
 #my $foo = $c->req->param('foo');
@@ -167,15 +170,27 @@ sub view {
 
 
   if (defined $s->param('iSortingCols')) {
-  $s->app->log->debug( "iSortingCols" );
+  my $c = $dbSession->{'colOrder'};
+  my @c = ();
+  if (defined $c) {
+    @c = @$c;
+  } else {
+    my $i = -1;
+    @c = map { $i++ } @$fields;
+  }
+  my $out = join(",",@c);
+  $s->app->log->debug( "iSortingCols, colOrder:[$out]" );
     my $n = $s->param('iSortingCols');
     my @orderBy;
-    my @fields =  @{ $s->session('fields') };
+    my @fields =  @{ $dbSession->{'fields'} };
+  $s->app->log->debug( "fields[".join(',', @fields)."]" );
     for (my $i = 0; $i < $n; $i++) {
       my $h = $s->param('iSortCol_'.$i);
+  $s->app->log->debug( "$h" );
       my $dir = $s->param('sSortDir_'.$i);
-
-      push @orderBy, $fields[$h]. " $dir";
+     if (length $fields[$c[$h]]) { 
+       push @orderBy, $fields[$c[$h]]. " $dir";
+     }
     }
     if ($#orderBy > -1) {
       $opt{order_by} = \@orderBy;
