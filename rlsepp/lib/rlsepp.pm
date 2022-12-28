@@ -39,7 +39,7 @@ sub startup {
 #  $self->sessions(Mojolicious::Sessions::DOM->new);
 #  $self->app->log(Dumper($self->sessions));
 
-  $self->sessions->cookie_domain('.portal.grandstreet.group');
+  $self->sessions->cookie_domain('.grandstreet.group');
   $self->sessions->samesite('Lax');
   $self->sessions->secure('true');
 
