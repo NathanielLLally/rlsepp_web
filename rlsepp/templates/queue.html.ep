@@ -24,11 +24,36 @@ function queue_addTransaction_helper(tag) {
     $(this).parent().children('li').not(this).removeClass('active');
       var tag = $(this).html()
        console.log('queue button '+tag);
-       $(".transaction_tag").html(tag);
        $("#transaction_tag").html(tag);
-      $("#global_filter").val(tag);
-      $("#resultSet_filter").val(tag);
-%#      $("#execute");
+      $("#transaction_tag_filter").val(tag);
+
+let s = $(".filter").map( function() {
+	let s = $(this).val() || ""
+	if (s.length) {
+		if (s.search(/!/) > -1) {
+		s = s.replace('!', "not like \'%")
+		s +="%\'"
+		
+	} else {
+		s = `like \'%${s}%\'`;
+	}
+	}
+	let f = this.id
+	f = f.replace('_filter','::varchar');
+	if (s.length) {
+		return f+' '+s
+	}
+})
+	.get()
+	.join(' and ');
+console.log(s)
+
+var dt = $('#resultSet').DataTable().search(
+        s,
+        $('#global_regex').prop('checked'),
+        $('#global_smart').prop('checked')
+    )
+dt.draw();
     });
 }
 
@@ -36,6 +61,15 @@ function queue_addTransaction(tag) {
   queue_addTransaction_helper(tag);
   session_addTransactions();
 }
+function session_clrTransactions() {
+  let s = window.session;
+  window.session = {
+    ...s,
+    ...{transactions: []}
+  };
+  window.wsSession();
+}
+
 function session_addTransactions() {
   let a = []
 

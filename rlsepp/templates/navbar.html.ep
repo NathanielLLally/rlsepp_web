@@ -17,6 +17,12 @@ $(document).ready(function() {
       var tag = $(this).html()
       $("#global_filter").val(tag);
       $("#resultSet_filter").val(tag);
+var dt = $('#resultSet').DataTable().search(
+        tag,
+        $('#global_regex').prop('checked'),
+        $('#global_smart').prop('checked')
+    )
+dt.draw();
     });
 
   $("#navbar > ul > li > a")

@@ -9,7 +9,7 @@ use Mojo::JSON qw(decode_json encode_json);
 use Carp;
 
 #our $DSN = "dbi:Pg:dbname=rlsepp;host=goshawk.grandstreet.group;port=5432";
-our $DSN = "DBI:Pg:dbname=rlsepp;host=54.219.185.152;port=5432";
+our $DSN = "DBI:Pg:dbname=rlsepp;host=db.grandstreet.group;port=5432";
 
 $ENV{DBI_TRACE} = 2;
 
@@ -171,6 +171,7 @@ sub saveUIPrefs {
     push @ff, @h[@{$f}[0]] . " " . @{$f}[1];
   };
   my $foo = join(',',@ff);
+#$s->app->log->debug("order being saved: $foo");
   $sth->execute($d->{ssoid},$d->{schema},$d->{view},$fields,$foo);
 }
 

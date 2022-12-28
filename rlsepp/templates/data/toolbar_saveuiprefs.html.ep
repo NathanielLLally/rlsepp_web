@@ -9,7 +9,7 @@
 <script>
 % my $i = 1;
 
-function wsTest(sortArray) {
+function wsTest(fieldString, sortArray) {
       if (!("WebSocket" in window)) {
         alert('Your browser does not support WebSockets!');
         return;
@@ -18,7 +18,6 @@ function wsTest(sortArray) {
       console.log("wsTest:2324 "+"<%= $socket %>");
       var ws = new WebSocket("<%= $socket %>");
       ws.onopen = function () {
-				var fieldString = $("#fieldorder").html();
         var json = {
           ssoid: "<%= $ssoid %>",
           view: "<%= $view %>",
@@ -39,7 +38,7 @@ function wsTest(sortArray) {
       };
 }
 
-function wsInsert(sortArray) {
+function wsInsert(fieldString, sortArray) {
       if (!("WebSocket" in window)) {
         alert('Your browser does not support WebSockets!');
         return;
@@ -47,7 +46,6 @@ function wsInsert(sortArray) {
 
       var ws = new WebSocket("<%= $url %>");
       ws.onopen = function () {
-				var fieldString = $("#fieldorder").html();
         var json = {
           ssoid: "<%= $ssoid %>",
           view: "<%= $view %>",
@@ -63,10 +61,10 @@ function wsInsert(sortArray) {
       };
       ws.onmessage = function (evt) {
         console.log('wsInsert');
-			console.log(evt);
+			console.log(evt.data);
         var data = JSON.parse(evt.data);
-        $('#fieldorder').html('');
-        $('#fieldorder').append(data);
+console.log(data);
+        $('#fieldorder').html(data.status);
       };
 }
 
@@ -95,12 +93,20 @@ function toolbar_saveuiprefs() {
       .html("<b>save</b>")
       .on( 'click', function (e) {
           e.preventDefault();
+
+let c = table.colReorder.order().filter((el, i) => {
+	return table.column( i ).visible();
+}).map((el, i) => {
+	return $(table.column( i+":visIdx" ).header()).html().replaceAll(' ','');
+});
+console.log(c.join(', '))
+  
+
 		console.log("<%= url_for('data/store')->to_abs %>");
       <!-- console.dir(JSON.stringify(table.context[0].aoHeader[0][0],null,4)); -->
 <!--      console.dir(JSON.stringify(table.context[0].aaSorting,null,4)); -->
       var sortArray = table.context[0].aaSorting;
- 				wsInsert(sortArray); 
- 				wsTest(sortArray); 
+ 				wsInsert(c.join(', '),sortArray); 
 console.log("exit save ui prefs");
 
           })

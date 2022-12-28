@@ -1,53 +1,78 @@
 % layout 'cli';
 % content_for header => begin
 % title 'Execute';
-<link rel="stylesheet" href="/css/xterm.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.13.0/css/xterm.css" />
+	<script src="https://cdn.jsdelivr.net/npm/xterm@4.13.0/lib/xterm.js"></script> 
+ <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.5.0/lib/xterm-addon-fit.js"></script> 
+%#	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.5.0/css/xterm.css" />
+%#	<script src="https://cdn.jsdelivr.net/npm/xterm@4.5.0/lib/xterm.js"></script> 
+%# <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.3.0/lib/xterm-addon-fit.js"></script> 
+
+%#<script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.5.0/lib/xterm-addon-fit.min.js"></script>
 %# <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/2.26.0/js/jquery.terminal.min.js"></script>
 
 %# <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/2.26.0/css/jquery.terminal.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/msgpack-lite/0.1.26/msgpack.min.js"></script>
 % end
-%= include 'rpc.mjs';
+%= include 'rpc_b.mjs';
 % my $transaction_tag = session 'transaction_tag';
 % my $useremail = session 'useremail';
 
-<script src="/js/term.js"></script>
 <script>
+
+
 $(document).ready(function() {
 
-let PS1 = `\x1b[1;34mrpc\x1b[1;32m->\x1b[1;36mexecute\x1b[1;32m->\x1b[1;33mskyhawk\x1b[1;37m $ `;
-let PS2 = `\x1b[1;34mrpc\x1b[1;32m<-\x1b[1;36mreceive\x1b[1;32m<-\x1b[1;33mskyhawk\x1b[1;37m $ `;
-window.rpcEvent.addEventListener('rpc', (e) => {
-  console.log('window RPC event listener')
-  console.log(e.detail);
-	if (e.detail.response) {
-		e.detail.response.split("\n").map( (line) => {
-			term.write("\r\n"+line);
-	});
-	}
-	if (e.detail.done) {
-		term.write("\r\n" + PS1);
-		}
-	curr_line = ""
-//  $('.log').append(`${JSON.stringify(e.detail,null,2)}<br/>`);
-})
+window.wsRPC({cmd: 'list'});
+window.rpcEvent.once('list', (r) => {
+  
+  r.map((el) => {
+    $("div.commands").append(`<button class="command button pill">${el}</button>`);
+  });
 
 	$('.command')
 		.off('click')
 		.on('click', function(e) {
 			e.preventDefault();
-			term.write("\r\n"+$(this).html() +' '+$('#transaction_tag').html());
+			term.write("\r\n"+$(this).html() +' '+JSON.stringify(window.session));
       window.wsRPC({cmd: $(this).html(), transaction_tag: $('#transaction_tag').html()});
 		});
+
+})
+
+
+let PS1 = `\x1b[1;34mrpc\x1b[1;32m->\x1b[1;36mexecute\x1b[1;32m->\x1b[1;33mskyhawk\x1b[1;37m $ `;
+let PS2 = `\x1b[1;34mrpc\x1b[1;32m<-\x1b[1;36mreceive\x1b[1;32m<-\x1b[1;33mskyhawk\x1b[1;37m $ `;
+window.rpcEvent.addEventListener('rpc', (e) => {
+//  console.log('window RPC event listener')
+	if (e.detail.response) {
+    let s = "" + e.detail.response;
+    try {
+  	  s.split("\n").map( (line) => {
+	  		term.write("\r\n"+line);
+      });
+    } catch(e) {
+      console.log(e);
+    }
+	}
+	if (e.detail.done) {
+  console.log(e.detail);
+		term.write("\r\n" + PS1);
+		}
+	curr_line = ""
+//  $('.log').append(`${JSON.stringify(e.detail,null,2)}<br/>`);
+
+})
+
+    
 });
 
 </script>
 <div>
-<h3 class="transaction_tag" ><%= $transaction_tag %></h3>
-<button id="execute" class="command button pill">execute</button>
-<button id="update" class="command button pill">update</button>
-<button class="command button pill">init</button>
-<button class="command button pill">balance</button>
-<button class="command button pill">invalid</button>
-<div id="terminal"></div>
+<div class="commands">
+  <h3 class="transaction_tag" ><%= $transaction_tag %></h3>
+  <button class="command button pill">invalid</button>
 </div>
+<div id="terminal" class="terminal"></div>
+</div>
+<script src="/js/term.js"></script>

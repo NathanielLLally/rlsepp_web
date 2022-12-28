@@ -3,7 +3,6 @@
 
 function toolbar() {
   var table = $('#resultSet').DataTable();
-
     var $toolbar = $("div.toolbar");
     var $widget = $(document.createElement("div"))
       .attr({id:"toggleColumns", class:"display"})
@@ -12,7 +11,9 @@ function toolbar() {
       .attr({id:"orderColumns", class:"display"})
       .appendTo($toolbar);
 
-% foreach my $header (@$headers) {
+/*
+% my @sorted = sort { $a cmp $b } @$headers;
+% foreach my $header (@sorted) {
     $(document.createElement("a"))
       .attr("class", "column-order button pill")
       .html("<%= $header %>")
@@ -23,20 +24,45 @@ function toolbar() {
       .appendTo($fieldOrder);
 % }
 
-% foreach my $header (@$headers) {
+% foreach my $header (@sorted) {
     $(document.createElement("a"))
       .attr("class", "toggle-vis button pill")
       .attr("data-column", "<%= $i++ %>")
       .html("<%= $header %>")
       .appendTo($widget);
 % }
-
+*/
     $('a.toggle-vis').on( 'click', function (e) {
      //   alert($(this).attr('data-column'));
         e.preventDefault();
- 
+/*
+let h = $(this).closest('th').html();
+console.log(h);
+
+let tablePos = $(this).closest('th').index();
+console.log( table.colReorder.order() );
+let order = table.colReorder.order().filter((el, i) => { 
+	return table.column( i ).visible();
+});
+
+console.log(tablePos);
+*/
+let attr = $(this).attr('column-name');
+//console.log(attr);
+let column = table.column(attr+":name");
+let name = $(column.header()).html();
+//console.log(name);
+//let column = table.column(order[tablePos]);
+//	let html = $(this).closest('table').find('th').eq($td.index());
+//console.log($(this));
+//console.log($(this).index());
+//	let html = $(this).closest('tbody').find('th').eq($(this).index());
+//'> tr > th:ne(' + $(this).index() + ')');
+//				console.log(order); 
+//console.log(table.columns())
+//console.log(table.column(0).header())
         // Get the column API object
-        var column = table.column( $(this).attr('data-column') );
+//        var column = table.column( $(this).attr('data-column') );
 //        console.log(column);
  
         // Toggle the visibility

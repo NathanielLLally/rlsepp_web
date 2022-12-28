@@ -1,15 +1,20 @@
-%= javascript begin
+<script>
 
 function initHook() {
   var table = $('#resultSet').DataTable();
+
+  console.log('initHook columns');
+
 }
 
 function columns() {
   var columns = []
 % foreach my $header (@$headers) {
-  columns.push({ data: "<%= $header %>"});
+%    my $vis = (exists $visible->{$header}) ? "true" : "false";
+  columns.push({ data: "<%= $header %>", name: "<%= $header %>", visible: <%= $vis %>})
 % }
+  console.log(columns);
   return columns;
 }
 
-%= end
+</script>

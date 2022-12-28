@@ -36,7 +36,6 @@ sub wsSession {
           $sid = $data->{sid};
           delete $data->{sid};
           $session = $s->retrieveSessionDb($sid);
-          $s->app->log->debug("session: sid [$sid]\n".dumper($session));
         }
        
         #  if data passed in sans sid contains keys
@@ -82,6 +81,7 @@ sub wsSession {
         #  then perform a store 
         #
         if ($count > 0) {
+          $s->app->log->debug("session: sid [$sid] is:\n".dumper($session));
           $sid = $s->storeSessionDb($session, $sid);
         }
 
@@ -121,6 +121,8 @@ sub view {
   $s->app->log->debug('ssoid '.$ssoid);
 
   $s->redirect_to('/') if (not defined $s->session('sid'));
+  my $sid = $s->session('sid');
+  my $dbSession = $s->retrieveSessionDb($sid);
 
   my $view = $s->stash('view');
   my $schema = $s->stash('schema');
@@ -128,7 +130,7 @@ sub view {
   $s->stash(ssoid => $ssoid);
   $s->app->log->debug("Data::View schema [$schema] view [$view] format [$format] ssoid [$ssoid]");
 
-  $s->stash(url => $s->url_for('/data/store')->to_abs->scheme('ws'));
+  $s->stash(url => $s->url_for('/data/store')->to_abs->scheme('wss'));
   #$s->stash(socket => $s->url_for('/data/store')->to_abs->scheme('ws')->port('2324'));
   $s->stash(socket => 'wss://min_max_order_notify.grandstreet.group:2324');
   $s->stash(mode => $s->app->mode);
@@ -136,6 +138,7 @@ sub view {
 
   #authenticated user is logged in
   $s->stash(roles => $s->session('roles'));
+
 
 #  my @names = $s->param;
 #my $foo = $c->req->param('foo');
@@ -158,15 +161,36 @@ sub view {
     $s->stash(search => $opt{search});
   }
 
+  if (exists $prefs->{sortorder}) {
+  $s->app->log->debug( "prefs sortorder" );
+    my @o = split(/,/, $prefs->{sortorder});
+    $opt{order_by} = \@o;
+  }
+  $s->app->log->debug('user prefs from dB :'.dumper(\$prefs));
+
+
   if (defined $s->param('iSortingCols')) {
+  my $c = $dbSession->{'colOrder'};
+  my @c = ();
+  if (defined $c) {
+    @c = @$c;
+  } else {
+    my $i = -1;
+    @c = map { $i++ } @$fields;
+  }
+  my $out = join(",",@c);
+  $s->app->log->debug( "iSortingCols, colOrder:[$out]" );
     my $n = $s->param('iSortingCols');
     my @orderBy;
-    my @fields =  @{ $s->session('fields') };
+    my @fields =  @{ $dbSession->{'fields'} };
+  $s->app->log->debug( "fields[".join(',', @fields)."]" );
     for (my $i = 0; $i < $n; $i++) {
       my $h = $s->param('iSortCol_'.$i);
+  $s->app->log->debug( "$h" );
       my $dir = $s->param('sSortDir_'.$i);
-
-      push @orderBy, $fields[$h]. " $dir";
+     if (length $fields[$c[$h]]) { 
+       push @orderBy, $fields[$c[$h]]. " $dir";
+     }
     }
     if ($#orderBy > -1) {
       $opt{order_by} = \@orderBy;
@@ -181,16 +205,16 @@ sub view {
   my $prefs = $s->getPrefs($schema,$view,$ssoid);
   my $fields = '*';
   @headers = @{$s->schemaviewForColumns("$schema.$view")};
+  my %visible = ();
   if (exists $prefs->{fields}) {
-    $fields = $prefs->{fields};
-    @headers = split(/,/,$fields);
+#    $fields = $prefs->{fields};
+#    @headers = split(/, /,$prefs->{fields});
+    my @h = split(/, /,$prefs->{fields});
+    foreach my $f (@h) {
+     $visible{$f} = 1;
+    }
   }
-  if (exists $prefs->{sortorder}) {
-    my @o = split(/,/, $prefs->{sortorder});
-    $opt{order_by} = \@o;
-
-  }
-  $s->app->log->debug('user prefs from dB :'.dumper(\$prefs).' ob: '.dumper($opt{order_by}));
+  $s->stash(visible => \%visible);
 
 
   $s->session(headers => \@headers);
@@ -207,8 +231,10 @@ sub view {
   }
 
   my $where = '';
+	
+	#TODO: guard from SQL injection
   if (exists $opt{search}) {
-    $where = ' where transaction_tag like \'%'.$opt{search}.'%\'';
+    $where = ' where '.$opt{search};
   }
 
   my $sql = "select count(*) as count from $schema.$view $where;";
@@ -224,8 +250,10 @@ sub view {
   #
   my $o = '';
   my $l = '';
+    $s->app->log->debug('session fields ['.join(',',@fields).']');
   if (exists $opt{'order_by'}) {
     $o = "order by ". join(", ", @{$opt{'order_by'}});
+    $s->app->log->debug("order by opt $o");
   }
   if (exists $opt{'page'} or exists $opt{'rows'}) {
     $l = "limit $limit offset $offset";
@@ -237,8 +265,10 @@ sub view {
     $s->session(order_by => $opt{'order_by'});
 
     $fields = '*' unless length $fields > 0;
+    my @g = grep { !/transaction_tag/} @headers;
+    my $group = 'group by transaction_tag,'.join(', ',@g);
     my @sql = ("select $fields from $schema.$view",
-        $where, $o, $l, ";"
+        $where, $group, $o, $l, ";"
         );
     $sql = join(' ', @sql);
   $s->app->log->debug( $sql );

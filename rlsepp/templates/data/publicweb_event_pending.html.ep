@@ -1,6 +1,7 @@
 % title 'Grand St Group';
 % layout 'portal';
 %= include 'data/lineitemselect'
+%= include 'session.mjs'
 %= javascript begin
 % my $i = 0;
 
@@ -25,6 +26,28 @@ function init() {
     } );
 
     toolbar();
+  //if no col-reorder, this is needed for sortorder sql
+      let t = []
+      let f = []
+      table.columns().every( function () {
+        var h = this.header();
+        var name = $(h).html();
+        name = name.replaceAll(' ','');
+        console.log(name);
+        t.push(this.index());
+        f.push(name);
+        if (/[a-zA-Z0-9]+/.test(name)) {
+          console.log('yeeey');
+        } else {
+        }
+      });
+//      console.log(t);
+      let s = window.session;
+      window.session = {
+        ...s,
+        ...{colOrder:t, fields:f}
+      };
+      console.log(window.session);
 //    $(document.createElement("div"))
 //      .html('*shift-click to sort on multiple columns')
 //      .appendTo($toolbar);

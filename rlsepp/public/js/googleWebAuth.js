@@ -1,3 +1,4 @@
+let Cookies = window.Cookies;
 
 function setSession(token, val) {
   Cookies.set('_'+token, val);

@@ -11,6 +11,7 @@ use Try::Tiny;
 use Mojo::JSON qw(decode_json encode_json);
 use Data::Dumper;
 use Mojolicious::Sessions;
+use Crypt::Digest::SHA256 qw( sha256 sha256_hex );
 
 # Render the template "index.html.ep"
 
@@ -49,8 +50,20 @@ sub index {
   # TODO: hypnotoad
   $s->stash(mode => $s->app->mode);
 
-  $s->app->log->debug("Service Mode (hypnotoad c->app->mode?): ".$s->app->mode);
-  $s->render; 
+  if (defined $s->param('challenge_code')) {
+    my @sha = ($s->param('challenge_code'), 
+    '1234IDeclareAThumbWar1234IDeclareAThumbWar',
+    'https://portal.grandstreet.group'
+    );
+
+    my $r = sha256_hex(join('',@sha));
+    
+    $s->app->log->debug("challenge_code: ".$s->app->mode. " challengeResponse: ".$r);
+    $s->render(status => 200, json => { challengeResponse => $r });
+  } else {
+    $s->app->log->debug("Service Mode (hypnotoad c->app->mode?): ".$s->app->mode);
+    $s->render; 
+  }
 }
 
 sub brochure {

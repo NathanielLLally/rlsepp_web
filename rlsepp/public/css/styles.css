@@ -31,7 +31,7 @@ td {
 
 th {
   border-bottom: 1px solid #000000;
-  background:  rgba(200, 200, 240, 0.8)
+/*  background:  rgba(200, 200, 240, 0.8) */
 }
 
 .even {
@@ -344,5 +344,22 @@ textarea {
 .overlay:target {
     visibility: visible;
     opacity: 1;
+}
+
+#terminal {
+    display: block;
+    width: calc(100% - 1 px);
+    margin: 0 auto;
+    padding: 2px;
+    height: calc(100% - 19px);
+}
+#terminal .terminal {
+    background-color: #000000;
+    color: #fafafa;
+    padding: 2px;
+    height: calc(100% - 19px);
+}
+#terminal .terminal:focus .terminal-cursor {
+    background-color: #fafafa;
 }
 
