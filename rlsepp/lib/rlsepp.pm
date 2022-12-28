@@ -39,7 +39,7 @@ sub startup {
 #  $self->sessions(Mojolicious::Sessions::DOM->new);
 #  $self->app->log(Dumper($self->sessions));
 
-  $self->sessions->cookie_domain('.portal.grandstreet.group');
+  $self->sessions->cookie_domain('.grandstreet.group');
   $self->sessions->samesite('Lax');
   $self->sessions->secure('true');
 
@@ -62,8 +62,8 @@ sub startup {
   $r->any('/app/orderbook')->to(controller => 'main', action => 'orderbook');
 #  $r->any('/app/')->to(controller => 'main', action => '');
   # or just one at a time
-  $r->any('/app/selector')->to(controller => 'main', action => 'selector');
-  $r->any('/app/monitor')->to(controller => 'main', action => 'monitor');
+  $r->any('/vpn/selector')->to(controller => 'main', action => 'selector');
+  $r->any('/vpn/monitor')->to(controller => 'main', action => 'monitor');
 
   # data tables stuff
   $r->any('/data/')->to('Data#test');
