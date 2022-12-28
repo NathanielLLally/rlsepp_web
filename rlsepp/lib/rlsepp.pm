@@ -58,12 +58,12 @@ sub startup {
 
   $r->any('/app/portal')->to('Main#portal');
 #  $r->any('/app/portal', [format => ['json', 'html']])->to('Main#portal');
-  $r->any('/app/log')->to(controller => 'main', action => 'log');
-  $r->any('/app/orderbook')->to(controller => 'main', action => 'orderbook');
+  $r->any('/vpn/log')->to(controller => 'main', action => 'log');
+  $r->any('/vpn/orderbook')->to(controller => 'main', action => 'orderbook');
 #  $r->any('/app/')->to(controller => 'main', action => '');
   # or just one at a time
-  $r->any('/app/selector')->to(controller => 'main', action => 'selector');
-  $r->any('/app/monitor')->to(controller => 'main', action => 'monitor');
+  $r->any('/vpn/selector')->to(controller => 'main', action => 'selector');
+  $r->any('/vpn/monitor')->to(controller => 'main', action => 'monitor');
 
   # data tables stuff
   $r->any('/data/')->to('Data#test');
