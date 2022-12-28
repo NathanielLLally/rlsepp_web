@@ -8,6 +8,7 @@ Type=simple
 RemainAfterExit=yes
 SyslogIdentifier=mojolicious
 User=nginx
+Environment="PERL5LIB=/usr/share/nginx/rlsepp:/usr/share/nginx/rlsepp/lib/rlsepp"
 PIDFile=/var/run/rlsepp_hypnotoad.pid
 WorkingDirectory=/usr/share/nginx/rlsepp
 ExecStart=/usr/local/bin/hypnotoad script/hypnotoad -f
