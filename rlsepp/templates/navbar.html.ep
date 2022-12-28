@@ -39,7 +39,7 @@ $(document).ready(function() {
   <li><a id="transaction_tag" class="navbar info" href="#"><%= $transaction_tag %></a></li>
 
 % if (grep {/trade/} @$roles) {
-  <li><a class="navbar" href="/app/selector">execute</a></li>
+  <li><a class="navbar" href="/vpn/selector">execute</a></li>
 % }
 % if (defined $useremail) {
   <li><a class="navbar info" href="/" ><%= $useremail %></a></li>
@@ -56,7 +56,7 @@ $(document).ready(function() {
   <li><a class="navbar" href="/data/view/private/web_event">completed events</a></li>
 % }
 % if (grep {/admin/} @$roles) {
-  <li><a class="navbar" href="/app/monitor">monitor</a></li>
+  <li><a class="navbar" href="/vpn/monitor">monitor</a></li>
 % }
 </ul>
 </div>
