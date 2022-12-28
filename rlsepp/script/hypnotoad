@@ -1,0 +1,21 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use Mojo::File qw(curfile);
+use lib curfile->dirname->sibling('lib')->to_string;
+use Mojolicious::Commands;
+use Mojo::Server::Hypnotoad;
+
+# Start command line interface for application
+#Mojolicious::Commands->start_app('rlsepp');
+
+my $ht = Mojo::Server::Hypnotoad->new;
+#(
+#  listen => 'https://0.0.0.0:3000',
+##  workers => 10
+#  );
+##$ht->config(hypnotoad => {listen => ['https://0.0.0.0:3000']});
+#$ht->configure('hypnotoad');#=> {listen => ['https://0.0.0.0:3000']});
+$ht->run('script/rlsepp');

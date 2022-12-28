@@ -12,4 +12,4 @@ use Mojo::Server::Hypnotoad;
 Mojolicious::Commands->start_app('rlsepp');
 
 #my $hypnotoad = Mojo::Server::Hypnotoad->new;
-#$hypnotoad->run('myapp.pl');
+#$hypnotoad->run('script/rlsepp');

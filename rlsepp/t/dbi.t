@@ -5,7 +5,7 @@ use Test::Mojo;
 use DBI;
 
 #goshawk.grandstreet.group 13.57.47.146 (check teusday may 18th)
-my $dbh = DBI->connect_cached("DBI:Pg:dbname=rlsepp;host=13.57.47.146;port=5432",'postgres', '', {'RaiseError' => 1, AutoCommit => 1}) || die     $DBI::errstr; 
+my $dbh = DBI->connect_cached("DBI:Pg:dbname=rlsepp;host=db.grandstreet.group;port=5432",'postgres', '', {'RaiseError' => 1, AutoCommit => 1}) || die     $DBI::errstr; 
                   # The AutoCommit attribute should always be explicitly set
                   #
                   #       # For some advanced uses you may need PostgreSQL type values:

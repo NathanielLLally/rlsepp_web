@@ -132,7 +132,7 @@ sub view {
 
   $s->stash(url => $s->url_for('/data/store')->to_abs->scheme('wss'));
   #$s->stash(socket => $s->url_for('/data/store')->to_abs->scheme('ws')->port('2324'));
-  $s->stash(socket => 'wss://min_max_order_notify.grandstreet.group:2324');
+  $s->stash(socket => 'wss://min_max_order_notify.grandstreet.group:2324'); #mode
   $s->stash(mode => $s->app->mode);
 	$s->session(views => $s->schemaviews);
 

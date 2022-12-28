@@ -53,7 +53,7 @@ sub index {
   if (defined $s->param('challenge_code')) {
     my @sha = ($s->param('challenge_code'), 
     '1234IDeclareAThumbWar1234IDeclareAThumbWar',
-    'https://portal.grandstreet.group'
+    'https://grandstreet.group'
     );
 
     my $r = sha256_hex(join('',@sha));
@@ -69,13 +69,13 @@ sub index {
 sub brochure {
   my $s = shift;
 
-  $s->app->log->debug( ' req query  '.$s->req->url->query );
-#  if (not $s->session('guseremail')) {
-#    $s->redirect_to('/');
-#    return;
-#  }
+  $s->app->log->debug( 'Controller::Main::brochure req query  '.$s->req->url->query );
+  if (not $s->session('guseremail')) {
+    $s->redirect_to('/');
+    return;
+  }
 
-#  $s->res->headers->cache_control('max-age=1, no-cache');
+  $s->res->headers->cache_control('max-age=1, no-cache');
 
   $s->stash(mode => $s->app->mode);
   my ($guserid, $guseremail, $gusername, $guserimageurl) = 
@@ -93,7 +93,7 @@ sub brochure {
 
   my $roles = $s->userRoles($guseremail);
   $s->session(roles => $roles);
-  $s->app->log->debug(dumper($roles));
+  $s->app->log->debug("Roles".dumper($roles));
 #  $s->session->store;
 
 #  my @jar = $s->res->cookies;
