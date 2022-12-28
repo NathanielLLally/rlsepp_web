@@ -1,8 +1,5 @@
 package rlsepp::Controller::Main;
 
-use lib '/home/nathaniel/src/git/rlsepp_web/rlsepp/lib';
-use lib '/home/nathaniel/src/git/rlsepp_web/rlsepp/lib/rlsepp';
-#use lib '../../';
 use base 'rlsepp::DBcommon';
 #use Mojo::Base 'rlsepp::DBCommon';
 use Mojo::IOLoop;
