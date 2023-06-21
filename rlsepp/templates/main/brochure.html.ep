@@ -7,7 +7,7 @@
                 </tr>
         </table>
 
-<!-- <div class="g-person" data-onfailure="onSignInFailure" data-onsuccess="onSignIn" data-gapiscan="true" data-onload="true"> -->
+ <div class="g-person" data-onfailure="onSignInFailure" data-onsuccess="onSignIn" data-gapiscan="true" data-onload="true"> 
 </div>
 
 <div>

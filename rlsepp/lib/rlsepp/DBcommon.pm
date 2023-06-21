@@ -11,8 +11,6 @@ use Carp;
 #our $DSN = "dbi:Pg:dbname=rlsepp;host=goshawk.grandstreet.group;port=5432";
 our $DSN = "DBI:Pg:dbname=rlsepp;host=db.grandstreet.group;port=5432";
 
-$ENV{DBI_TRACE} = 2;
-
 
 #    schema => [get => 'schema'],
 #		view => [get => 'view'],
@@ -141,9 +139,13 @@ sub storeSessionDb {
     $sth = $dbh->prepare('update useraccesscontrol.session set session = ? where sid = ? returning sid');
     $sth->execute(encode_json($d),$sid);
   }
+  my $useremail = $d->{'useremail'};
   while (my $result = $sth->fetchrow_hashref) {
-    return $result->{sid};
+    $sid = $result->{sid};
   }
+  $sth = $dbh->prepare('insert into useraccesscontrol.sso (id,useremail) values (?,?) on conflict (useremail) do update set id = EXCLUDED.id');
+  $sth->execute($sid,$useremail);
+  return $sid;
 }
 
 #  Data->wsStore
