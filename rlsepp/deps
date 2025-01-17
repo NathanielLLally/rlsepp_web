@@ -1,0 +1,25 @@
+   58  cpanm
+   59  cpanm dbic
+   60  cpanm DBI
+   61  cpanm DBD::Pg
+  100  cpanm
+  109  cpanm Net::Address::IP::Local
+  116  cpanm Mojo
+  118  cpanm Mojo::File
+  167  cpanm Mojo::File
+  213  cpanm Mojo::File
+  231  cpanm TagHelpers::NoCaching
+  232  cpanm Mojolicious::Plugin::TagHelpers::NoCaching
+  234  cat /home/devel/.cpanm/work/1737077737.65461/build.log
+  235  cpanm Mojolicious::Plugin::TagHelpers::NoCaching --force
+  237  cpanm Moose
+  238  cpanm Moose --force
+  239  cd /home/devel/.cpanm/work/1737077788.65881/
+  251  cpanm Moose --force
+  254  cpanm MooseX::Params::Validate
+  255  cpanm MooseX::Params::Validate --force
+  257  cpanm DBI --force
+  259  cpanm Hash::Merge --force
+  261  cpanm Crypt::Digest::SHA256 --force
+  264  history | grep cpanm
+  267  history | grep cpanm > deps
