@@ -18,7 +18,7 @@ function wsRPC(Pjson) {
   };
 (async () => {
     eventEmitter.dispatchEvent(new CustomEvent('rpc', { detail: `executing command [${json.cmd}]` }));          
-    let ws = new awsRPC({url:"wss://skyhawk.grandstreet.group:2324"});                                          
+    let ws = new awsRPC({url:"wss://wss.grandstreet.group:2324"});                                          
     await ws.connect();
         ws.client.on("message", (cmd, message, ...args) => {
           console.log(`client on.message ${cmd}, ${message}, ${args}`);
