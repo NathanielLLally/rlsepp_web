@@ -43,9 +43,14 @@ var WebSocketClient = function () {
          */
         value: function connect(url, protocols) {
             var _this = this;
+            
 
             return this.disconnect().then(function () {
                 _this._reset();
+                if (_this.startsWith("ws:")) {
+                  console.log("js/websocket-async.esm.js: _createClass(connect: ");
+                  throw new Error("js/websocket-async.esm.js: _createClass(connect: wrong port, use SSL- see insert url doc");
+                }       
 
                 _this._socket = new WebSocket(url, protocols);
                 _this._socket.binaryType = 'arraybuffer';
