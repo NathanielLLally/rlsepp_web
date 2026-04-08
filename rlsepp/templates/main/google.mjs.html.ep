@@ -37,7 +37,7 @@ async function onSignIn(googleUser) {
 	};
 
   const ws = new WebSocketClient;
-  await ws.connect('wss://wss.grandstreet.group/session');
+  await ws.connect('wss://app.grandstreet.group/session');
   console.log('esm module wss://connected')
   ws.send(JSON.stringify(json));
   let data = await ws.receive();
