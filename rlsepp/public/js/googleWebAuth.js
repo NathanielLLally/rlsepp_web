@@ -43,7 +43,7 @@ function wsSession(json) {
     return;
   }
 
-  var ws = new WebSocket("ws://portal.grandstreet.group/session");
+  var ws = new WebSocket("wss://wss.grandstreet.group/session");
   ws.onopen = function () {
     console.log(json)
     ws.send(JSON.stringify(json));

@@ -16,7 +16,7 @@ use rlsepp::Auth;
 
 sub wsSession {
   my $s = shift;
-  $s->app->log->debug("ws://data:wsSession");
+  $s->app->log->debug("wss://data:wsSession");
 
   # Increase inactivity timeout for connection a bit (what was it?)
   $s->inactivity_timeout(300);
@@ -304,7 +304,7 @@ sub view {
 sub wsStore {
   my $s = shift;
   my $format = $s->stash('format');
-  $s->app->log->debug("ws://Data:wsStore format $format");
+  $s->app->log->debug("wss://Data:wsStore format $format");
 
   # Increase inactivity timeout for connection a bit (what was it?)
   $s->inactivity_timeout(300);
