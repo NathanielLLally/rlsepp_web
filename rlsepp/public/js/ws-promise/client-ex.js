@@ -4,7 +4,7 @@ var _Client = _interopRequireDefault(require("./Client.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const client = new _Client.default("wss://wss.grandstreet.group:2324");
+const client = new _Client.default("wss://app.grandstreet.group:2324");
 
 (async () => {
   await client.open();

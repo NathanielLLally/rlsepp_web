@@ -5,7 +5,7 @@ import Client from "/js/ws-promise/Client.mjs"
 export default class awsRPC {
   constructor(opts) {
 		this.ws = null;
-    this.url = 'wss://wss.grandstreet.group:2324/';
+    this.url = 'wss://app.grandstreet.group:2324/';
     if (opts.url) {
       this.url = opts.url
     }
