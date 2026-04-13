@@ -1,4 +1,5 @@
-<script type="module">
+<script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" type="module">
+console.log("wwwF_app:google template BEGIN");
   import { default as WebSocketClient } from "/js/websocket-async.esm.js"
 let Cookies = window.Cookies;
 function getUser(token, api) {
@@ -61,7 +62,8 @@ async function onSignIn(googleUser) {
       $('a#login_href').attr('href','/app/portal');
       $('a#login_href').html('You may enter our portal');
 
-console.log(json.guseremail);
+console.log("wwwF_app:onSignin: "+json.guseremail);
+
       $('.useremail').html(json.guseremail);
       $('.guserimage').html("<img src=\""+json.guserimageurl+"\" height=\"50\" width=\"50\"/>");
 }
