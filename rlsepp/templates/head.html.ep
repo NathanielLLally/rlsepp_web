@@ -1,0 +1,4 @@
+<link rel="shortcut icon" href="/img/GSG_BW_favicon.png" />
+<script src="https://accounts.google.com/gsi/client" nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" async />
+% # <%= tag 'link', rel => 'preload', href => url_for('csp.anal.seepage'), as => 'script' %>
+% # <%= tag 'link', rel => 'modulepreload', href => url_for('depends.isnnt.perfume.mjs'), as => 'script' %>

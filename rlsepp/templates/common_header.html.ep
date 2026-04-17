@@ -3,8 +3,8 @@
 %= stylesheet_nc '/css/styles.css'
 %= stylesheet_nc '/css/navbar.css'
 %= stylesheet_nc '/css/overrides.css'
-%= javascript '/js/jquery-3.3.1.min.js'
-%= javascript '/js/libs/underscore-min.js'
-%= javascript '/js/js.cookie.js'
-%= javascript '/js/libs/modernizr.js'
-%= javascript '/js/libs/jquery.leanModal.min.js'
+<script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" src='/js/jquery-3.3.1.min.js' />
+<script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" src='/js/libs/underscore-min.js' />
+<script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" src='/js/js.cookie.js' />
+<script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" src='/js/libs/modernizr.js' />
+<script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" src='/js/libs/jquery.leanModal.min.js' />

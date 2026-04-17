@@ -1,6 +1,8 @@
 % title 'Grand St Group';
 % layout 'default';
-%= include 'google.mjs'
+% #websocket module is es6  loaded as commonJS
+%= include 'google.mjs';
+
 % my $useremail = session('useremail') || '';
 	<table>
 		<tr>
@@ -17,31 +19,29 @@
 	<li><a style="float:right" href="mailto:sales@grandstreet.group">Contact Us</a></li>
   </ul>
   </div>
-<div><table><tr valign="middle"><td>
-%# <!-- https://developers.google.com/identity/sign-in/web/build-button -->
-<script>
-    function onSuccess(googleUser) {
-			window.googleOnSignIn(googleUser);
-      console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
-    }
-    function onFailure(error) {
-      console.log(error);
-    }
-    function renderButton() {
-      gapi.signin2.render('my-signin2', {
-        'scope': 'profile email',
-        'width': 240,
-        'height': 50,
-        'longtitle': true,
-        'theme': 'dark',
-        'onsuccess': onSuccess,
-        'onfailure': onFailure
-      });
-    }
+<div>
+	<table>
+		<tr valign="middle">
+<td>
 
-</script>
   <div class="navbar">
-<div class="g-signin2" data-onsuccess="onSuccess" data-onfailure="onFailure" data-width="200" data-height="50" theme-"dark"></div>
+<div id="g_id_onload"
+     data-client_id="17870503823-it9a6qsdstdb8jpg8f16qpqmqg0m6cnt.apps.googleusercontent.com"
+     data-context="signin"
+     data-login_uri="https://grandstreet.group"
+     data-callback="googleNewShitFunction"
+     data-auto_prompt="false">
+hi
+</div>
+
+<div class="g_id_signin"
+     data-type="standard"
+     data-shape="pill"
+     data-theme="outline"
+     data-text="signin_with"
+     data-size="large"
+     data-logo_alignment="left">
+</div>
   </td><td>
   <span class="guserimage" ></span>
   <span class="useremail"></span>

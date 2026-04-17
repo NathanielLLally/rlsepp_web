@@ -1,72 +1,141 @@
-<script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" type="module">
-console.log("wwwF_app:google template BEGIN");
-  import { default as WebSocketClient } from "/js/websocket-async.esm.js"
-let Cookies = window.Cookies;
-function getUser(token, api) {
-  var key = '_'+api+'user'+token;
-  var val =  Cookies.get(key);
-  if (val) return val;
-  return null;
-}
-function getCookie(token) {
-  var val =  Cookies.get(token);
-  if (val) return val;
-  return null;
-}
-function setCookie(token, val) {
-  setUser(token,val);
-}
-function setUser(token, val) {
-//  var key = '_'+api+'user'+token;
-  var key = token
-
-  var opts = { domain: '.grandstreet.group', samesite: 'Lax' };
-  Cookies.set(key, val, opts);
-}
-async function onSignIn(googleUser) {
-  var idToken;
-  var profile;
-      profile = googleUser.getBasicProfile();
-      idToken = googleUser.getAuthResponse().id_token;
-
-
-	let json = {
-		guserid: profile.getId(),
-	  gusername: profile.getName(),
-	  guserimageurl: profile.getImageUrl(),
-	  guseremail: profile.getEmail(),
-	  useremail: profile.getEmail(),
-	};
-
-  const ws = new WebSocketClient;
-  await ws.connect('wss://app.grandstreet.group/session');
-  console.log('esm module wss://connected')
-  ws.send(JSON.stringify(json));
-  let data = await ws.receive();
-  let jsonData = JSON.parse(data);
-  setCookie('sid', null);
-  if (jsonData.sid) {
-    setCookie('sid', jsonData.sid);
-  }
-	let sid = getCookie('sid');
-	console.log('cookie sid :'+sid);
-
-  if (ws.dataAvailable !== 0) {
-    console.log(await ws.receive());
-  }
-  // Close the connection.
-  await ws.disconnect();
-
-      $('a#portal_href').attr('href','/app/portal?sid='+sid);
-
-      $('a#login_href').attr('href','/app/portal');
-      $('a#login_href').html('You may enter our portal');
-
-console.log("wwwF_app:onSignin: "+json.guseremail);
-
-      $('.useremail').html(json.guseremail);
-      $('.guserimage').html("<img src=\""+json.guserimageurl+"\" height=\"50\" width=\"50\"/>");
-}
-window.googleOnSignIn = onSignIn;
-export default onSignIn;
+% content_for 'head' => begin
+<script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8">
+console.log("wwwF_app:google head BEGIN");
 </script>
+
+	<script src="https://accounts.google.com/gsi/client" nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" async></script>
+	% end
+
+% content_for header => begin
+	<script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" type="module" async>
+	console.log("wwwF_app:google template BEGIN");
+	      function decodeJWT(token) {
+
+		let base64Url = token.split(".")[1];
+		let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+		let jsonPayload = decodeURIComponent(
+		  atob(base64)
+		    .split("")
+		    .map(function (c) {
+		      return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+		    })
+		    .join("")
+		);
+		return JSON.parse(jsonPayload);
+	      }
+
+	  import { default as WebSocketClient } from "/js/websocket-async.esm.js"
+	let Cookies = window.Cookies;
+	function getUser(token, api) {
+	  var key = '_'+api+'user'+token;
+	  var val =  Cookies.get(key);
+	  if (val) return val;
+	  return null;
+	}
+	function getCookie(token) {
+	  var val =  Cookies.get(token);
+	  if (val) return val;
+	  return null;
+	}
+	function setCookie(token, val) {
+	  setUser(token,val);
+	}
+	function setUser(token, val) {
+	//  var key = '_'+api+'user'+token;
+	  var key = token
+
+	  var opts = { domain: '.grandstreet.group', samesite: 'Lax' };
+	  Cookies.set(key, val, opts);
+	}
+	async function onSignIn(googleUser) {
+	  var idToken;
+	  var profile;
+	      profile = googleUser.getBasicProfile();
+	      idToken = googleUser.getAuthResponse().id_token;
+
+
+		let json = {
+			guserid: profile.getId(),
+		  gusername: profile.getName(),
+		  guserimageurl: profile.getImageUrl(),
+		  guseremail: profile.getEmail(),
+		  useremail: profile.getEmail(),
+		};
+
+	  const ws = new WebSocketClient;
+	  await ws.connect('wss://app.grandstreet.group/session');
+	  console.log('esm module wss://connected')
+	  ws.send(JSON.stringify(json));
+	  let data = await ws.receive();
+	  let jsonData = JSON.parse(data);
+	  setCookie('sid', null);
+	  if (jsonData.sid) {
+	    setCookie('sid', jsonData.sid);
+	  }
+		let sid = getCookie('sid');
+		console.log('cookie sid :'+sid);
+
+	  if (ws.dataAvailable !== 0) {
+	    console.log(await ws.receive());
+	  }
+	  // Close the connection.
+	  await ws.disconnect();
+
+	      $('a#portal_href').attr('href','/app/portal?sid='+sid);
+
+	      $('a#login_href').attr('href','/app/portal');
+	      $('a#login_href').html('You may enter our portal');
+
+	console.log("wwwF_app:onSignin: "+json.guseremail);
+
+	      $('.useremail').html(json.guseremail);
+	      $('.guserimage').html("<img src=\""+json.guserimageurl+"\" height=\"50\" width=\"50\"/>");
+	}
+	async function googleNewShitFunction(response) {
+
+		const profile = decodeJWT(response.credential);
+
+		let json = {
+			guserid: profile.sub,
+		  gusername: profile.name,
+		  guserimageurl: profile.picture,
+		  guseremail: profile.email,
+		  useremail: profile.email,
+		};
+
+	  const ws = new WebSocketClient;
+	  await ws.connect('wss://app.grandstreet.group:2324/session');
+	  console.log('esm module wss://connected, sending google siginin json')
+	  console.log(JSON.stringify(json));
+	  ws.send(JSON.stringify(json));
+	  let data = await ws.receive();
+	  let jsonData = JSON.parse(data);
+	  setCookie('sid', null);
+	  if (jsonData.sid) {
+	    setCookie('sid', jsonData.sid);
+	  }
+		let sid = getCookie('sid');
+		console.log('cookie sid :'+sid);
+
+	  if (ws.dataAvailable !== 0) {
+	    console.log(await ws.receive());
+	  }
+	  // Close the connection.
+	  await ws.disconnect();
+
+	      $('a#portal_href').attr('href','/app/portal?sid='+sid);
+
+	      $('a#login_href').attr('href','/app/portal');
+	      $('a#login_href').html('You may enter our portal');
+
+	console.log("wwwF_app:onSignin: "+json.guseremail);
+
+	      $('.useremail').html(json.guseremail);
+	      $('.guserimage').html("<img src=\""+json.guserimageurl+"\" height=\"50\" width=\"50\"/>");
+	}
+	export default googleNewShitFunction;
+	window.googleNewShitFunction = googleNewShitFunction;
+
+	console.log("wwwF_app:google template END");
+	</script>
+% end 
