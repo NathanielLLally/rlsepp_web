@@ -1,6 +1,7 @@
 % title 'Grand St Group';
 % layout 'default';
 % #websocket module is es6  loaded as commonJS
+%= include 'common_header';
 %= include 'google.mjs';
 
 % my $useremail = session('useremail') || '';

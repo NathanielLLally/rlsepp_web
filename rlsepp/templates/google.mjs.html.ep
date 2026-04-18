@@ -2,13 +2,13 @@
 <script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8">
 console.log("wwwF_app:google head BEGIN");
 </script>
+<script src="https://accounts.google.com/gsi/client" nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" async></script>
+<script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8">
+console.log("wwwF_app:google head END, can see client is loaded for end of async");
+</script>
 
-	<script src="https://accounts.google.com/gsi/client" nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" async></script>
-	% end
-
-% content_for header => begin
 	<script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" type="module" async>
-	console.log("wwwF_app:google template BEGIN");
+	console.log("wwwF_app:google module defer async BEGIN");
 	      function decodeJWT(token) {
 
 		let base64Url = token.split(".")[1];
@@ -135,7 +135,20 @@ console.log("wwwF_app:google head BEGIN");
 	}
 	export default googleNewShitFunction;
 	window.googleNewShitFunction = googleNewShitFunction;
+	window.postMessage = function () {
+		console.log("postMessage hook");
+	}
+	console.log("wwwF_app:google head END");
+	console.log("wwwF_app:google module defer async END");
+</script>
+	% end
 
-	console.log("wwwF_app:google template END");
+% content_for header => begin
+% # async defer, module isn't loaded yet
+% #
+<script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8">
+	console.log("wwwF_app:google header BEGIN");
+	console.log("wwwF_app:google header END");
+
 	</script>
 % end 
