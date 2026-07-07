@@ -1,4 +1,4 @@
-<script>
+<script nonce="<%= $nonce %>">
 % my $i = 1;
 
 function toolbar() {

@@ -7,10 +7,11 @@
   <meta name="viewport" content="width=device-width">
 
   %= include 'common_header'
-  <%= content_for 'header' %>
+  <%= content 'head' %>
 
 </head>
 <body background-color="blue">
+  <%= content_for 'header' %>
   %= include 'header'
   %= include 'navbar'
   %= include 'queue'

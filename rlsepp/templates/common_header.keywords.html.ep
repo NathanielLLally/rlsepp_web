@@ -1,0 +1,10 @@
+<link rel="shortcut icon" href="/img/GSG_BW_favicon.png" />
+%= stylesheet '/css/h5bp.css'
+%= stylesheet_nc '/css/styles.css'
+%= stylesheet_nc '/css/navbar.css'
+%= stylesheet_nc '/css/overrides.css'
+%= javascript '/js/jquery-3.3.1.min.js'
+%= javascript '/js/libs/underscore-min.js'
+%= javascript '/js/js.cookie.js'
+%= javascript '/js/libs/modernizr.js'
+%= javascript '/js/libs/jquery.leanModal.min.js'

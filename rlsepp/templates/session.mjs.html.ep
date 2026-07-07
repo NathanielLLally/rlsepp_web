@@ -1,5 +1,5 @@
 % my $sid = session 'sid';
-<script type="module">
+<script type="module" nonce="<%= $nonce %>">
   import { default as asyncWsSession } from "/js/session.esm.js"
 
 let eventEmitter = new EventTarget();

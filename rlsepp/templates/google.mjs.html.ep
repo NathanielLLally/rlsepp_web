@@ -124,6 +124,7 @@ console.log("wwwF_app:google head END, can see client is loaded for end of async
 	  await ws.disconnect();
 
 	      $('a#portal_href').attr('href','/app/portal?sid='+sid);
+	      $('a#portal_href').html('Client Portal');
 
 	      $('a#login_href').attr('href','/app/portal');
 	      $('a#login_href').html('You may enter our portal');

@@ -36,7 +36,7 @@ sub echo {
 
 sub index {
   my $s = shift;
-  $s->app->log->debug( ' req query  '.$s->req->url->query );
+  $s->app->log->debug( ' req path' . $s->req->url->path . ' query  '.$s->req->url->query );
   $s->app->log->info("index");
 #  $s->res->headers->cache_control('max-age=1, no-cache');
 

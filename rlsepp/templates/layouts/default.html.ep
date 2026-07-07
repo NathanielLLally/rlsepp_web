@@ -5,6 +5,7 @@
   <title><%= title %></title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width">
+  %= include 'common_header';
 
 <link rel="shortcut icon" href="/img/GSG_BW_favicon.png" />
 

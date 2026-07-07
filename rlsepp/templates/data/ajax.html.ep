@@ -5,7 +5,7 @@
 %= include 'data/toolbar_saveuiprefs'
 %= include 'data/search'
 %= include 'data/session.mjs'
-<script>
+<script nonce="<%= $nonce %>">
 function setCookie(token, val) {
 //  var key = '_'+api+'user'+token;
   var key = token

@@ -1,7 +1,7 @@
 % my $sid = session 'sid';
-<script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.1.10/es5-shim.min.js"></script>
-<script src="https://rawgit.com/kawanet/msgpack-lite/master/dist/msgpack.min.js"></script>
-<script type="module">
+<script nonce="<%= $nonce %>" src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.1.10/es5-shim.min.js"></script>
+<script nonce="<%= $nonce %>" src="https://cdn.jsdelivr.net/npm/msgpack-lite/dist/msgpack.min.js" />
+<script nonce="<%= $nonce %>" type="module">
   import { default as awsRPC } from "/js/rpc.esm.js"
 
 let eventEmitter = new EventTarget();

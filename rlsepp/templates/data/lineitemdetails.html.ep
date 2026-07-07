@@ -1,4 +1,4 @@
-<script>
+<script nonce="<%= $nonce %>">
 
 function format ( d ) {
     // `d` is the original data object for the row

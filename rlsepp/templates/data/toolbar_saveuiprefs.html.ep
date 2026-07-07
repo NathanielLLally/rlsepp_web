@@ -6,7 +6,7 @@
 %   @order_by = @$order_by;
 % }
 
-<script>
+<script nonce="<%= $nonce %>">
 % my $i = 1;
 
 function wsTest(fieldString, sortArray) {

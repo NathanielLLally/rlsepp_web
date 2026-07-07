@@ -4,7 +4,7 @@
 %= include 'data/toolbar'
 %= include 'data/toolbar_saveuiprefs'
 %= include 'data/search'
-<script>
+<script nonce="<%= $nonce %>">
 function setCookie(token, val) {
 //  var key = '_'+api+'user'+token;
   var key = token

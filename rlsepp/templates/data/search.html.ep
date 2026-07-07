@@ -1,4 +1,4 @@
-<script>
+<script nonce="<%= $nonce %>">
 
 function filterGlobal () {
 	console.log('filterGlobal()');

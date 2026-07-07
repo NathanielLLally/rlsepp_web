@@ -26,39 +26,29 @@ sub startup {
 #plugin 'TagHelpers::NoCaching', {key => 'v'};
   my $helper = $self->plugin('TagHelpers::NoCaching', {key => 'v'});
 
-  #$self->sessions(Mojolicious::Sessions::DOM->new);
-
   # Configure the application
   $self->secrets($config->{secrets});
-#  $self->sessions->default_expiration(300);
   $self->sessions->default_expiration(864000);
-
-
 
 #$self->app->types->type(json => 'application/json+html');
 
   # Router
   my $r = $self->routes;
   
-#  $self->app->log(Dumper($self->sessions));
+  #  my $s = Mojolicious::Sessions::DOM->new;
+  #  $self->app->log(Dumper($self->sessions));
+  #  $self->app->sessions($s);
+
+  $self->app->log(Dumper($self->sessions));
+
 
   $self->sessions->cookie_domain('.grandstreet.group');
+  $self->app->log->info("setting cookie settings");
   $self->sessions->samesite('Lax');
   $self->sessions->secure('true');
 
-  $self->app->log->info($self->sessions);
 
-$self->app->hook(before_dispatch => sub {
-  my $c = shift;
-  $c->stash(nonce => "416d1177-4d12-4e3b-b7c9-f6c409789fb8"); # Need to implement generator
-});
-
-# Render the template "index.html.ep"
-#get '/' => sub ($c) {
-#  $c->render;
-#} => 'index';
-
-	$r->any('/echo')->to(controller => 'main', action => 'echo');
+  $r->any('/echo')->to(controller => 'main', action => 'echo');
 
   # Normal route to controller
   $r->any('/')->to(controller => 'main', action => 'index');

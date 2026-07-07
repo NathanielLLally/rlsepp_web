@@ -2,7 +2,7 @@
 % layout 'portal';
 %= include 'data/lineitemselect'
 %= include 'session.mjs'
-%= javascript begin
+%= javascript, nonce => $nonce, begin
 % my $i = 0;
 
 var data;

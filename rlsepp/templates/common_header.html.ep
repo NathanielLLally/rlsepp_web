@@ -7,11 +7,11 @@
 %= stylesheet_nc '/css/styles.css'
 %= stylesheet_nc '/css/navbar.css'
 %= stylesheet_nc '/css/overrides.css'
-<script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+<script nonce="<%= $nonce %>" src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
 <script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" src='https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js' />
 <script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" src='/js/libs/underscore-min.js' async/>
 <script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" src='https://cdn.jsdelivr.net/npm/underscore@1.13.8/dist/underscore.min.js' />
-<!-- script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" src='/js/libs/jquery.leanModal.min.js' -->
+<script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8" src='/js/libs/jquery.leanModal.min.js' />
 <script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8"> 
   console.log("wwwF_app:common_header head template END");
 </script>

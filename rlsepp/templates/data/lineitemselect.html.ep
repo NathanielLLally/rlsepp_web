@@ -1,5 +1,5 @@
 %= include 'data/toolbar1'
-%= javascript begin
+%= javascript, nonce => $nonce, begin
 
 function columns() {
   var columns = []

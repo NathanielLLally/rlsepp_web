@@ -4,7 +4,7 @@
 %= include 'session.mjs';
 % my $transactions = [];
 
-<script>
+<script nonce="<%= $nonce %>">
 function queue_addTransaction_helper(tag) {
 
 	console.log('queue_addTransaction');

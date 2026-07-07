@@ -1,0 +1,50 @@
+% title 'Grand St Group';
+% layout 'default';
+%= include 'google.mjs'
+% my $useremail = session('useremail') || '';
+	<table>
+		<tr>
+			<td><img src="img/GSG_Logo_BlackWhite_263_60.png" width="526" height="120"/></td>
+		</tr>
+		<tr><td>
+		<h2 style="color:powderblue;">	&nbsp&nbsp Our mission is to produce exceptional returns for our investors.  We utilize consumer goods market arbitrage, currency exchange, and network security</h2>
+      </td>
+		</tr>
+	</table>
+  <div class="navbar">
+  <ul>
+<li><a id="portal_href" href="/brochure">Client Portal</a></li>
+	<li><a style="float:right" href="mailto:sales@grandstreet.group">Contact Us</a></li>
+  </ul>
+  </div>
+<div><table><tr valign="middle"><td>
+%# <!-- https://developers.google.com/identity/sign-in/web/build-button -->
+<script nonce="416d1177-4d12-4e3b-b7c9-f6c409789fb8">
+    function onSuccess(googleUser) {
+			window.googleOnSignIn(googleUser);
+      console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
+    }
+    function onFailure(error) {
+      console.log(error);
+    }
+    function renderButton() {
+      gapi.signin2.render('my-signin2', {
+        'scope': 'profile email',
+        'width': 240,
+        'height': 50,
+        'longtitle': true,
+        'theme': 'dark',
+        'onsuccess': onSuccess,
+        'onfailure': onFailure
+      });
+    }
+
+</script>
+  <div class="navbar">
+<div class="g-signin2" data-onsuccess="onSuccess" data-onfailure="onFailure" data-width="200" data-height="50" theme-"dark"></div>
+  </td><td>
+  <span class="guserimage" ></span>
+  <span class="useremail"></span>
+</div>
+  </td></tr></table></div>
+

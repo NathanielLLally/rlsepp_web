@@ -1,6 +1,6 @@
 % my $sid = session 'sid';
-<script src="https://rawgit.com/kawanet/msgpack-lite/master/dist/msgpack.min.js"></script>
-<script type="module">
+<script nonce="<%= $nonce %>" src="https://cdn.jsdelivr.net/npm/msgpack-lite/dist/msgpack.min.js" />
+<script nonce="<%= $nonce %>" type="module">
 import ansi from "/js/ansi-colors-es6/index.js";
 import Client from "/js/ws-promise/Client.mjs";
 import EventEmitter from "/js/ws-promise/EventEmitter.js";
@@ -60,7 +60,7 @@ function wsRPC(Pjson, ...args) {
     
     let ws = undefined;
     if (typeof window.awsRPC === 'undefined') {
-      ws = new awsRPC({url:"wss://skyhawk.grandstreet.group:2324"});
+      ws = new awsRPC({url:"wss://db.grandstreet.group:2324"});
       window.awsRPC = ws
         ws.client.on("message", (cmd, message, ...args) => {
           console.log(`client on.message ${cmd}, ${args}`);

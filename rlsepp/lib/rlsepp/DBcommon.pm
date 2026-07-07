@@ -359,17 +359,18 @@ sub userHasRole {
 sub getUserID {
   my ($s, $fields) = @_;
   my ($dbh, $sth, $rs,$uid) = ($s->dbh, (undef) x 3);
-  my $sql = "select useraccesscontrol.googlesso(?,?,?,?);";
+  my $sql = "call useraccesscontrol.googlesso(?,?,?,?);";
   $sth = $dbh->prepare($sql);
 #  useraccesscontrol.googlesso (Pguserid varchar, Pgusername varchar, Pguseremail varchar, Pguserimageurl varchar
   $s->app->log->debug(dumper($fields));
   my @args = map { $fields->{$_} } qw/guserid gusername guseremail guserimageurl/;
   $s->app->log->debug(dumper(@args));
   $sth->execute(@args);
-  $rs = $sth->fetchall_arrayref();
+  $rs = $sth->fetchall_arrayref({});
 
   if (defined $rs and defined $rs->[0]) {
-    $uid = $rs->[0]->[0];
+  $s->app->log->debug(dumper($rs->[0]));
+    $uid = $rs->[0]->{ssoid};
   }
   return $uid;
 #  my $statement = "select * from public.useraccesscontrol.sso";
@@ -378,9 +379,6 @@ sub getUserID {
 sub isLoggedIn {
   my ($s, $useremail) = @_;
   my ($dbh, $sth, $rs,$uid) = ($s->dbh, (undef) x 3);
-  if ($uid eq 'nathaniel.lally@gmail.com') {
-    return 1;
-  }
 #  my $statement = "select * from public.useraccesscontrol.sso";
 #  $rs = $dbh->selectall_hashref($statement, 'userid');
   $s->app->log->debug(dumper($rs));

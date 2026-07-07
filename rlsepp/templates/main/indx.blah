@@ -1,8 +1,6 @@
 % title 'Grand St Group';
 % layout 'default';
-% #websocket module is es6  loaded as commonJS
-%= include 'google.mjs';
-
+%= include 'google.mjs'
 % my $useremail = session('useremail') || '';
 	<table>
 		<tr>
@@ -15,27 +13,28 @@
 	</table>
   <div class="navbar">
   <ul>
-<li><a id="portal_href" href="/brochure"></a></li>
+<li><a id="portal_href" href="/brochure">Client Portal</a></li>
 	<li><a style="float:right" href="mailto:sales@grandstreet.group">Contact Us</a></li>
   </ul>
   </div>
-<div>
-	<table>
-		<tr valign="middle">
-<td>
+<div><table><tr valign="middle"><td>
+
+<a href="https://codelabs.developers.google.com/codelabs/sign-in-with-google-button#1" />
 
   <div class="navbar">
+
 <div id="g_id_onload"
      data-client_id="17870503823-it9a6qsdstdb8jpg8f16qpqmqg0m6cnt.apps.googleusercontent.com"
      data-context="signin"
-     data-login_uri="https://grandstreet.group"
-     data-callback="googleNewShitFunction"
+     data-native_login_uri="https://grandstreet.group/asdklhasflkh"
      data-auto_prompt="false">
 </div>
 
+<!-- https://stackoverflow.com/questions/76451143/cross-origin-opener-policy-policy-would-block-the-window-postmessage-call-error -->
+
 <div class="g_id_signin"
      data-type="standard"
-     data-shape="pill"
+	     data-shape="pill"
      data-theme="outline"
      data-text="signin_with"
      data-size="large"
